@@ -1,0 +1,6 @@
+express
+mongodb
+nodemon
+cors
+socket.io
+dotenv-cli
