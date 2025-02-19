@@ -1,4 +1,5 @@
 require("dotenv").config();
+const authRoute = require("./routes/auth");
 const { connectToMongo } = require("./utils/mongo");
 const express = require("express");
 const app = express();
@@ -16,3 +17,5 @@ const port = process.env.PORT;
 server.listen(port, () => {
   console.log(`Server listening at ${port}`);
 });
+
+app.use("/auth", authRoute);
