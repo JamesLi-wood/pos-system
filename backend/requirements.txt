@@ -4,3 +4,5 @@ nodemon
 cors
 socket.io
 dotenv-cli
+bcrypt
+jsonwebtoken
