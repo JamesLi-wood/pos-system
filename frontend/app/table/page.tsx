@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ValidateToken from "../component/validateToken";
+import ValidateToken from "../components/validateToken";
 
 const Table = () => {
   return (
