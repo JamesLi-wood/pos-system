@@ -18,13 +18,14 @@ const TablePage = () => {
   }, []);
 
   return (
-    <ValidateToken>
+    <div className="h-full">
+      <ValidateToken />
       <div>TABLE PAGE</div>
       <Link className="bg-red-500" href={"/"}>
         BACK
       </Link>
-      <Table menu={menu} tables={tables}/>
-    </ValidateToken>
+      <Table menu={menu} tables={tables} />
+    </div>
   );
 };
 
