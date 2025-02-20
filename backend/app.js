@@ -1,5 +1,6 @@
 require("dotenv").config();
 const authRoute = require("./routes/auth");
+const orderRoute = require("./routes/order");
 const { connectToMongo } = require("./utils/mongo");
 const express = require("express");
 const app = express();
@@ -19,3 +20,5 @@ server.listen(port, () => {
 });
 
 app.use("/auth", authRoute);
+
+app.use("/order", orderRoute);
