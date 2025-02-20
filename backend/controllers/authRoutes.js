@@ -10,10 +10,8 @@ const login = async (req, res) => {
   const { username, password } = req.body;
   const user = await validateUser(username, password);
 
-  if (!user) {
-    console.log("invalid credentials");
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
+  if (user == null) return res.status(503).json({ message: "Server error" });
+  if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
   const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
 
