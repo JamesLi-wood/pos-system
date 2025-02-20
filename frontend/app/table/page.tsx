@@ -1,15 +1,31 @@
+"use client";
 import Link from "next/link";
 import ValidateToken from "../components/validateToken";
+import { useState, useEffect } from "react";
+import Table from "./table";
 
-const Table = () => {
+const TablePage = () => {
+  const [menu, setMenu] = useState([]);
+  const [tables, setTables] = useState([]);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/menu`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMenu(data.menu);
+        setTables(data.tables);
+      });
+  }, []);
+
   return (
     <ValidateToken>
       <div>TABLE PAGE</div>
       <Link className="bg-red-500" href={"/"}>
         BACK
       </Link>
+      <Table menu={menu} tables={tables}/>
     </ValidateToken>
   );
 };
 
-export default Table;
+export default TablePage;
