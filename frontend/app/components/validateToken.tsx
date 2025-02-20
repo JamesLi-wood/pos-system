@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { redirect } from "next/navigation";
 
-const ValidateToken = ({ children }: { children: React.ReactNode }) => {
+const ValidateToken = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userLog = sessionStorage.getItem("userConnected");
@@ -25,7 +25,7 @@ const ValidateToken = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  return <div>{children}</div>;
+  return null;
 };
 
 export default ValidateToken;
