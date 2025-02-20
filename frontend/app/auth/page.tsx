@@ -31,6 +31,7 @@ const Auth = () => {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem("token", data.token);
+      sessionStorage.setItem("userConnected", "true");
       redirect("/table");
     } else {
       const error = await response.json();
