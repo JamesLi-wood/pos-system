@@ -2,13 +2,18 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const bcrypt = require("bcrypt");
 
 const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
+let client;
+try {
+  client = new MongoClient(uri, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    },
+  });
+} catch (error) {
+  console.log(error);
+}
 
 async function connectToMongo() {
   try {
@@ -20,19 +25,62 @@ async function connectToMongo() {
 }
 
 async function validateUser(username, password) {
-  const db = client.db("restaurant");
-  const collection = db.collection("employees");
+  try {
+    const db = client.db("restaurant");
+    const collection = db.collection("employees");
 
-  const result = await collection.find({ username: username }).toArray();
-  if (result.length == 0) return false;
+    const result = await collection.find({ username: username }).toArray();
+    if (result.length == 0) return false;
 
-  const verifyPassword = await bcrypt.compare(password, result[0].password);
-  if (!verifyPassword) return false;
+    const verifyPassword = await bcrypt.compare(password, result[0].password);
+    if (!verifyPassword) return false;
 
-  return result[0];
+    return result[0];
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+async function getMenu() {
+  try {
+    const db = client.db("menu");
+    const collections = await db.listCollections().toArray();
+    const allData = [];
+
+    for (const collection of collections) {
+      const collectionName = collection.name;
+
+      allData.push({
+        name: collectionName,
+        data: await db.collection(collectionName).find({}).toArray(),
+      });
+    }
+
+    return allData;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+async function fetchTables() {
+  try {
+    const db = client.db("restaurant");
+    const collection = db.collection("tables");
+    const tableNames = (await collection.find({}).toArray()).map(
+      (data) => data.name
+    );
+    return tableNames;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 }
 
 module.exports = {
   connectToMongo: connectToMongo,
   validateUser: validateUser,
+  getMenu: getMenu,
+  fetchTables: fetchTables,
 };
