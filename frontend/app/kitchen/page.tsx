@@ -3,12 +3,13 @@ import ValidateToken from "../components/validateToken";
 
 const Kitchen = () => {
   return (
-    <ValidateToken>
+    <div>
+      <ValidateToken />
       <div>KITCHEN PAGE</div>
       <Link className="bg-red-500" href={"/"}>
         BACK
       </Link>
-    </ValidateToken>
+    </div>
   );
 };
 
