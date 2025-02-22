@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import ValidateToken from "../components/validateToken";
 import { useState, useEffect } from "react";
 import Table from "./table";
@@ -20,10 +19,6 @@ const TablePage = () => {
   return (
     <div className="h-full">
       <ValidateToken />
-      <div>TABLE PAGE</div>
-      <Link className="bg-red-500" href={"/"}>
-        BACK
-      </Link>
       <Table menu={menu} tables={tables} />
     </div>
   );
