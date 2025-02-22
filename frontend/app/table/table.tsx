@@ -1,11 +1,24 @@
 "use client";
 import { useState } from "react";
 import Order from "./order";
+import Link from "next/link";
+
+interface MenuItemData {
+  _id: string;
+  name: string;
+  price: number;
+}
+
+interface menuItem {
+  name: string;
+  data: MenuItemData[];
+}
+
 const Table = ({
   menu,
   tables,
 }: {
-  menu: Array<object>;
+  menu: menuItem[];
   tables: Array<string>;
 }) => {
   const [inventory, setInventory] = useState(false);
@@ -37,6 +50,9 @@ const Table = ({
         </div>
 
         <div className="w-60 border border-red-500 overflow-y-scroll scroll-hidden">
+          <Link className="bg-red-500" href={"/"}>
+            BACK
+          </Link>
           <div className="h-[2000px]">TAKEOUT LOGIC GOES HERE</div>
           <div>BOTTOM CONTENT</div>
         </div>
