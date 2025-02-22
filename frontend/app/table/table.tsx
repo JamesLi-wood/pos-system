@@ -2,23 +2,13 @@
 import { useState } from "react";
 import Order from "./order";
 import Link from "next/link";
-
-interface MenuItemData {
-  _id: string;
-  name: string;
-  price: number;
-}
-
-interface menuItem {
-  name: string;
-  data: MenuItemData[];
-}
+import { MenuData } from "./types";
 
 const Table = ({
   menu,
   tables,
 }: {
-  menu: menuItem[];
+  menu: MenuData[];
   tables: Array<string>;
 }) => {
   const [inventory, setInventory] = useState(false);
