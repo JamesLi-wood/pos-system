@@ -1,9 +1,8 @@
-import React, { useContext, useState, useRef } from "react";
-import { tableContext } from "./order";
+import { useContext, useState, useRef, useMemo } from "react";
 import { VscAdd, VscChromeMinimize } from "react-icons/vsc";
-import useCounter from "../hooks/useCounter";
-
+import { tableContext } from "./order";
 import { MenuItemData } from "./types";
+import useCounter from "../hooks/useCounter";
 
 const MenuItem = ({ item }: { item: MenuItemData }) => {
   const context = useContext(tableContext);
@@ -22,7 +21,25 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
   const [additionalPrice, setAdditionalPrice] = useState(0);
   const specialRequestRef = useRef<HTMLTextAreaElement>(null);
 
-  const SingularOptionMenu = () => {
+  const addOrder = async () => {
+    const totalPrice = item.price * counter + additionalPrice;
+    const order = {
+      name: item.name,
+      price: totalPrice,
+      quantity: counter,
+      singularOptions: singularOptions,
+      multipleOptions: multipleOptions.filter((item) => item !== null),
+      specialRequests: specialRequestRef.current
+        ? specialRequestRef.current.value
+        : "",
+    };
+
+    setCurrentPrice((prevState) => (prevState += totalPrice));
+    setCurrentOrder((prevState) => [...prevState, order]);
+    removeSlidedownContent();
+  };
+
+  const singularOptionMenu = useMemo(() => {
     if (item.singularOptions.length < 0) return;
 
     const handleSingular = (idx: number, choice: string) => {
@@ -73,9 +90,9 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
         })}
       </div>
     );
-  };
+  }, [singularOptions]);
 
-  const MultipleOptionMenu = () => {
+  const multipleOptionMenu = useMemo(() => {
     if (!item.multipleOptions) return;
 
     const handleMultiple = (
@@ -127,9 +144,9 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
         <hr className="my-4 border-[1.5px] border-gray-500" />
       </div>
     );
-  };
+  }, [multipleOptions]);
 
-  const SpecialRequestMenu = () => {
+  const specialRequestMenu = useMemo(() => {
     return (
       <div>
         <p>Special Requests</p>
@@ -142,7 +159,7 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
         />
       </div>
     );
-  };
+  }, []);
 
   return (
     <div className="bg-inherit">
@@ -152,9 +169,9 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
         <p className="text-base">{item.description}</p>
         <hr className="my-4 border-[1.5px] border-gray-500 sticky top-[4.2rem]" />
 
-        <SingularOptionMenu />
-        <MultipleOptionMenu />
-        <SpecialRequestMenu />
+        {singularOptionMenu}
+        {multipleOptionMenu}
+        {specialRequestMenu}
       </div>
 
       <div className="p-4 sticky gap-4 flex bottom-0 left-0 right-0 bg-inherit">
@@ -168,7 +185,10 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
             <VscAdd />
           </button>
         </div>
-        <button className="px-3 rounded-lg bg-green-500 w-full flex justify-between items-center">
+        <button
+          className="px-3 rounded-lg bg-green-500 w-full flex justify-between items-center"
+          onClick={addOrder}
+        >
           <p>Add {counter === 1 ? "Item" : `${counter} Items`}</p>
           <p>${item.price * counter + additionalPrice}</p>
         </button>
