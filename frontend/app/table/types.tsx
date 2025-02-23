@@ -26,8 +26,12 @@ export interface MenuData {
 }
 
 export interface OrderItem {
-  id: number;
   name: string;
+  price: number;
+  quantity: number;
+  singularOptions: Array<string>;
+  multipleOptions: Array<string>;
+  specialRequests: string;
 }
 
 export interface TableContextType {
