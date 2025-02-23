@@ -6,9 +6,9 @@ export interface SingularOptionsData {
 export interface MultipleOptionsData {
   title: string;
   choices: {
-    title: string;
-    options: Array<string>;
-  };
+    name: string;
+    price: number;
+  }[];
 }
 
 export interface MenuItemData {
@@ -17,7 +17,7 @@ export interface MenuItemData {
   price: number;
   description: string;
   singularOptions: SingularOptionsData[];
-  multipleOptions: MultipleOptionsData[];
+  multipleOptions: MultipleOptionsData;
 }
 
 export interface MenuData {
