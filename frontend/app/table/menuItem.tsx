@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { tableContext } from "./order";
 import { VscAdd, VscChromeMinimize } from "react-icons/vsc";
 import useCounter from "../hooks/useCounter";
@@ -13,6 +13,136 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
 
   const { removeSlidedownContent, setCurrentOrder, setCurrentPrice } = context;
   const { counter, increment, decrement } = useCounter();
+  const [singularOptions, setSingularOptions] = useState(
+    Array(item.singularOptions.length).fill(null)
+  );
+  const [multipleOptions, setMultipleOptions] = useState(
+    Array(item.multipleOptions?.choices.length).fill(null)
+  );
+  const [additionalPrice, setAdditionalPrice] = useState(0);
+  const specialRequestRef = useRef<HTMLTextAreaElement>(null);
+
+  const SingularOptionMenu = () => {
+    if (item.singularOptions.length < 0) return;
+
+    const handleSingular = (idx: number, choice: string) => {
+      const newArr = [...singularOptions];
+      newArr[idx] = choice;
+
+      setSingularOptions(newArr);
+    };
+
+    return (
+      <div>
+        {item.singularOptions.map((option, idx) => {
+          return (
+            <div key={option.title}>
+              <div>
+                <div className="flex justify-between">
+                  <p className="text-2xl">{option.title}</p>
+                  <p className="flex items-center rounded-3xl bg-gray-200 px-2 text-base text-gray-300 bg-neutral-800">
+                    Required
+                  </p>
+                </div>
+
+                <p className="text-base">Select an option</p>
+              </div>
+
+              {option.choices.map((choice) => {
+                return (
+                  <label
+                    key={choice}
+                    className="flex flex-row items-center cursor-pointer mt-2"
+                  >
+                    <input
+                      type="radio"
+                      className="h-8 w-6"
+                      name={`singular-selection${idx}`}
+                      checked={singularOptions[idx] === choice}
+                      onChange={() => {
+                        handleSingular(idx, choice);
+                      }}
+                    />
+                    <p className="ml-2">{choice}</p>
+                  </label>
+                );
+              })}
+              <hr className="my-4 border-[1.5px] border-gray-500" />
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const MultipleOptionMenu = () => {
+    if (!item.multipleOptions) return;
+
+    const handleMultiple = (
+      choice: { name: string; price: number },
+      idx: number
+    ) => {
+      const name = choice.name;
+      const price = choice.price;
+
+      const newArr = [...multipleOptions];
+
+      if (newArr[idx] === name) {
+        newArr[idx] = null; // unselects.
+        setAdditionalPrice((prevState) => prevState - price);
+      } else {
+        newArr[idx] = name; // selects.
+        setAdditionalPrice((prevState) => prevState + price);
+      }
+
+      setMultipleOptions(newArr);
+    };
+
+    return (
+      <div>
+        <p className="text-2xl">{item.multipleOptions.title}</p>
+        <div>
+          {item.multipleOptions.choices.map((choice, idx) => {
+            return (
+              <label
+                key={choice.name}
+                className="flex flex-row items-center cursor-pointer mt-2"
+              >
+                <input
+                  type="checkbox"
+                  className="h-8 w-6"
+                  checked={multipleOptions[idx] === choice.name}
+                  onChange={() => {
+                    handleMultiple(choice, idx);
+                  }}
+                />
+                <div className="ml-2 flex justify-between w-full">
+                  <p>{choice.name}</p>
+                  <p>+${choice.price}</p>
+                </div>
+              </label>
+            );
+          })}
+        </div>
+        <hr className="my-4 border-[1.5px] border-gray-500" />
+      </div>
+    );
+  };
+
+  const SpecialRequestMenu = () => {
+    return (
+      <div>
+        <p>Special Requests</p>
+        <textarea
+          id="special-requests"
+          ref={specialRequestRef}
+          className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
+          placeholder="Add special request"
+          rows={3}
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="bg-inherit">
@@ -21,6 +151,10 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
         <p className="sticky top-0 bg-inherit text-3xl py-4">{item.name}</p>
         <p className="text-base">{item.description}</p>
         <hr className="my-4 border-[1.5px] border-gray-500 sticky top-[4.2rem]" />
+
+        <SingularOptionMenu />
+        <MultipleOptionMenu />
+        <SpecialRequestMenu />
       </div>
 
       <div className="p-4 sticky gap-4 flex bottom-0 left-0 right-0 bg-inherit">
@@ -36,7 +170,7 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
         </div>
         <button className="px-3 rounded-lg bg-green-500 w-full flex justify-between items-center">
           <p>Add {counter === 1 ? "Item" : `${counter} Items`}</p>
-          <p>${item.price * counter}</p>
+          <p>${item.price * counter + additionalPrice}</p>
         </button>
       </div>
     </div>
