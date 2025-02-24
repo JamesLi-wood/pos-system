@@ -44,3 +44,8 @@ export interface TableContextType {
   currentPrice: number;
   setCurrentPrice: React.Dispatch<React.SetStateAction<number>>;
 }
+
+export interface TicketItem {
+  orderID: number;
+  ticket: OrderItem[];
+}
