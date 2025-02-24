@@ -1,9 +1,10 @@
 "use client";
-import ValidateToken from "../components/validateToken";
 import { useState, useEffect } from "react";
 import Table from "./table";
+import useValidateToken from "../hooks/useValidateToken";
 
 const TablePage = () => {
+  useValidateToken();
   const [menu, setMenu] = useState([]);
   const [tables, setTables] = useState([]);
 
@@ -18,7 +19,6 @@ const TablePage = () => {
 
   return (
     <div className="h-full">
-      <ValidateToken />
       <Table menu={menu} tables={tables} />
     </div>
   );

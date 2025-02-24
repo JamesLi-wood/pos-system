@@ -1,10 +1,11 @@
 import Link from "next/link";
-import ValidateToken from "../components/validateToken";
+import useValidateToken from "../hooks/useValidateToken";
 
 const Kitchen = () => {
+  useValidateToken();
+
   return (
     <div>
-      <ValidateToken />
       <div>KITCHEN PAGE</div>
       <Link className="bg-red-500" href={"/"}>
         BACK
