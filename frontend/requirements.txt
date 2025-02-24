@@ -1,2 +1,4 @@
 nextjs
+tailwind
 react-icons
+socket.io-client
