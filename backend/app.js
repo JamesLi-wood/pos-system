@@ -5,8 +5,10 @@ const { connectToMongo } = require("./utils/mongo");
 const express = require("express");
 const app = express();
 
+const socketIoSetup = require("./utils/socket");
 const http = require("http");
 const server = http.createServer(app);
+socketIoSetup(server);
 
 const cors = require("cors");
 app.use(cors());
