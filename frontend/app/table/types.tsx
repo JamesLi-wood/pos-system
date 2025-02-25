@@ -49,3 +49,9 @@ export interface TicketItem {
   orderID: number;
   ticket: OrderItem[];
 }
+
+export interface KitchenTicketType {
+  dateCreated: number;
+  orderID: number;
+  ticket: OrderItem[];
+}
