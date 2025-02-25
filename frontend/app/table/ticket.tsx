@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { tableContext } from "./order";
 import Item from "./item";
 import { TicketItem } from "./types";
+import { useSocket } from "../hooks/useSocket";
 
 const Ticket = () => {
   const context = useContext(tableContext);
@@ -20,6 +21,7 @@ const Ticket = () => {
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [price, setPrice] = useState(0);
   const [showDelete, setShowDelete] = useState(false);
+  const socket = useSocket();
 
   const fetchTickets = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/ticket/get-ticket`, {
@@ -83,10 +85,10 @@ const Ticket = () => {
 
     if (response.ok) {
       if (tableName === "takeout") {
-        // Request takeout ticket
+        socket.emit("request-takeout-ticket");
         setInventory(false);
       } else {
-        // Request kitchen ticket
+        socket.emit("request-kitchen-ticket");
         fetchTickets();
         setCurrentOrder([]);
         setCurrentPrice(0);
