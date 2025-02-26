@@ -55,7 +55,7 @@ const Ticket = () => {
       }),
     });
 
-    fetchTickets();
+    if (tableName !== "takeout") fetchTickets();
   };
 
   const removeCurrentItem = (idx: number) => {
