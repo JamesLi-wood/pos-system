@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import Order from "./order";
 import Link from "next/link";
+import Takeout from "./takeout";
+import Order from "./order";
 import { MenuData } from "./types";
 
 const Table = ({
@@ -43,8 +44,11 @@ const Table = ({
           <Link className="bg-red-500" href={"/"}>
             BACK
           </Link>
-          <div className="h-[2000px]">TAKEOUT LOGIC GOES HERE</div>
-          <div>BOTTOM CONTENT</div>
+          <Takeout
+            activateInventory={() => {
+              activateInventory("takeout");
+            }}
+          />
         </div>
       </div>
     );
