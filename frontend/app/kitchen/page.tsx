@@ -4,11 +4,11 @@ import { SetStateAction, useEffect, useState } from "react";
 import useValidateToken from "../hooks/useValidateToken";
 import { useSocket } from "../hooks/useSocket";
 import KitchenTicket from "./kitchenTicket";
+import { TicketType } from "../types";
 
-import { KitchenTicketType } from "../table/types";
 const Kitchen = () => {
   useValidateToken();
-  const [kitchenTickets, setKitchenTickets] = useState<KitchenTicketType[]>([]);
+  const [kitchenTickets, setKitchenTickets] = useState<TicketType[]>([]);
   const socket = useSocket();
 
   // Initial load.
@@ -18,7 +18,7 @@ const Kitchen = () => {
 
   // Listens to any changes on the ticket.
   useEffect(() => {
-    const handleSocketRequest = (data: SetStateAction<KitchenTicketType[]>) => {
+    const handleSocketRequest = (data: SetStateAction<TicketType[]>) => {
       setKitchenTickets(data);
     };
 
