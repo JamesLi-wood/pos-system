@@ -1,9 +1,9 @@
-"use client"
+"use client";
 import useTimer from "../hooks/useTimer";
-import { KitchenTicketType } from "../table/types";
 import { useSocket } from "../hooks/useSocket";
+import { TicketType } from "../types";
 
-const KitchenTicket = ({ data }: { data: KitchenTicketType }) => {
+const KitchenTicket = ({ data }: { data: TicketType }) => {
   const [formatTime] = useTimer(data.dateCreated);
   const socket = useSocket();
 

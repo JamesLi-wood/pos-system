@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from "react";
+import { useSocket } from "../hooks/useSocket";
 import { tableContext } from "./order";
 import Item from "./item";
-import { TicketItem } from "./types";
-import { useSocket } from "../hooks/useSocket";
+import { TicketType } from "../types";
 
 const Ticket = () => {
   const context = useContext(tableContext);
@@ -18,7 +18,7 @@ const Ticket = () => {
     setCurrentPrice,
     setInventory,
   } = context;
-  const [tickets, setTickets] = useState<TicketItem[]>([]);
+  const [tickets, setTickets] = useState<TicketType[]>([]);
   const [price, setPrice] = useState(0);
   const [showDelete, setShowDelete] = useState(false);
   const socket = useSocket();

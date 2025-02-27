@@ -1,6 +1,6 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { useSocket } from "../hooks/useSocket";
-import { KitchenTicketType } from "./types";
+import { TicketType } from "../types";
 
 const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
   const [takeoutTickets, setTakeoutTickets] = useState<any>([]);
@@ -11,7 +11,7 @@ const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
   }, []);
 
   useEffect(() => {
-    const handleSocketRequest = (data: SetStateAction<KitchenTicketType[]>) => {
+    const handleSocketRequest = (data: SetStateAction<TicketType[]>) => {
       setTakeoutTickets(data);
     };
 

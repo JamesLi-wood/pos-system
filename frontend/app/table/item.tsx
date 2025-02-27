@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { VscChromeClose } from "react-icons/vsc";
 import { SlArrowDown } from "react-icons/sl";
-import { OrderItem } from "./types";
+import { OrderType } from "../types";
 
 const Item = ({
   item,
   handleRemove,
   showDelete,
 }: {
-  item: OrderItem;
+  item: OrderType;
   handleRemove: () => void;
   showDelete: Boolean;
 }) => {

@@ -1,10 +1,10 @@
 import { useContext, useState, useRef, useMemo } from "react";
 import { VscAdd, VscChromeMinimize } from "react-icons/vsc";
-import { tableContext } from "./order";
-import { MenuItemData } from "./types";
 import useCounter from "../hooks/useCounter";
+import { tableContext } from "./order";
+import { MenuItemType } from "../types";
 
-const MenuItem = ({ item }: { item: MenuItemData }) => {
+const MenuItem = ({ item }: { item: MenuItemType }) => {
   const context = useContext(tableContext);
   if (!context) {
     throw new Error("tableContext must be used within a Provider");
@@ -16,7 +16,7 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
     Array(item.singularOptions.length).fill(null)
   );
   const [multipleOptions, setMultipleOptions] = useState(
-    Array(item.multipleOptions?.choices.length).fill(null)
+    Array(item.multipleOptions.choices?.length).fill(null)
   );
   const [additionalPrice, setAdditionalPrice] = useState(0);
   const specialRequestRef = useRef<HTMLTextAreaElement>(null);
@@ -93,7 +93,7 @@ const MenuItem = ({ item }: { item: MenuItemData }) => {
   }, [singularOptions]);
 
   const multipleOptionMenu = useMemo(() => {
-    if (!item.multipleOptions) return;
+    if (!item.multipleOptions.choices) return;
 
     const handleMultiple = (
       choice: { name: string; price: number },

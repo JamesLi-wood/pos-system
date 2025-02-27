@@ -3,13 +3,13 @@ import { useState } from "react";
 import Link from "next/link";
 import Takeout from "./takeout";
 import Order from "./order";
-import { MenuData } from "./types";
+import { MenuType } from "../types";
 
 const Table = ({
   menu,
   tables,
 }: {
-  menu: MenuData[];
+  menu: MenuType[];
   tables: Array<string>;
 }) => {
   const [inventory, setInventory] = useState(false);

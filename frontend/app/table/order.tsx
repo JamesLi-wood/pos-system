@@ -1,13 +1,9 @@
 "use client";
 import React, { useState, createContext } from "react";
+import SlideDown from "../components/slidedown";
 import Ticket from "./ticket";
 import MenuItem from "./menuItem";
-import SlideDown from "../components/slidedown";
-import {
-  MenuData,
-  OrderItem,
-  TableContextType,
-} from "./types";
+import { MenuType, OrderType, TableContextType } from "../types";
 
 export const tableContext = createContext<TableContextType | undefined>(
   undefined
@@ -18,15 +14,15 @@ const Order = ({
   tableName,
   setInventory,
 }: {
-  menu: MenuData[];
+  menu: MenuType[];
   tableName: string;
   setInventory: Function;
 }) => {
-  const [options, setOptions] = useState<MenuData>(menu[0]);
+  const [options, setOptions] = useState<MenuType>(menu[0]);
   const [slidedownContent, setSlidedownContent] =
     useState<React.ReactNode | null>(null);
   const [selectedItem, setSelectedItem] = useState(0);
-  const [currentOrder, setCurrentOrder] = useState<OrderItem[]>([]);
+  const [currentOrder, setCurrentOrder] = useState<OrderType[]>([]);
   const [currentPrice, setCurrentPrice] = useState(0);
 
   const removeSlidedownContent = () => {
