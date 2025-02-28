@@ -42,7 +42,7 @@ const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
 
   return (
     <div>
-      <div className="text-center">Takeout</div>
+      <p className="text-center">Takeout</p>
       <div>
         <div className="flex justify-center bg-gray-300 py-4">
           <button
@@ -57,10 +57,10 @@ const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
           return (
             <div key={data.orderID} className="border border-black py-4">
               <div className="flex flex-col items-start justify-between">
-                <div className="">
-                  <div>{`Order#: ${data.orderID}`}</div>
-                  <div>Customer Name</div>
-                  <div>Customer Phone Number</div>
+                <div>
+                  <p>{`Order#: ${data.orderID}`}</p>
+                  <p>Customer Name</p>
+                  <p>Customer Phone Number</p>
                 </div>
                 <div className="flex w-full gap-1 justify-center">
                   <button className="cursor-pointer rounded border-none bg-[rgb(0,139,139)] p-4 text-white">

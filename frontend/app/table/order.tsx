@@ -69,7 +69,7 @@ const Order = ({
           <div className="border px-2">
             {menu.map((item, idx) => {
               return (
-                <div
+                <p
                   key={item.name}
                   className={`${
                     selectedItem === idx && "bg-gray-800"
@@ -80,13 +80,13 @@ const Order = ({
                   }}
                 >
                   {item.name}
-                </div>
+                </p>
               );
             })}
           </div>
 
           <div className="w-full">
-            <div>{options.name}</div>
+            <p>{options.name}</p>
             <div className="grid grid-cols-4">
               {options.data.map((item) => {
                 return (
@@ -98,8 +98,8 @@ const Order = ({
                     }}
                   >
                     <div>IMG</div>
-                    <div>{item.name}</div>
-                    <div>${item.price}</div>
+                    <p>{item.name}</p>
+                    <p>${item.price}</p>
                   </div>
                 );
               })}
