@@ -88,11 +88,12 @@ const Ticket = () => {
         socket.emit("request-takeout-ticket");
         setInventory(false);
       } else {
-        socket.emit("request-kitchen-ticket");
         fetchTickets();
         setCurrentOrder([]);
         setCurrentPrice(0);
       }
+
+      socket.emit("request-kitchen-ticket");
     }
   };
 
