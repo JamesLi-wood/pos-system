@@ -13,21 +13,26 @@ const Kitchen = () => {
 
   // Initial load.
   useEffect(() => {
-    socket.emit("request-kitchen-ticket");
-  }, []);
+    if (socket) socket.emit("request-kitchen-ticket");
+  }, [socket]);
 
   // Listens to any changes on the ticket.
   useEffect(() => {
+    if (!socket) return;
+
     const handleSocketRequest = (data: SetStateAction<TicketType[]>) => {
       setKitchenTickets(data);
     };
 
     socket.on("get-kitchen-ticket", handleSocketRequest);
-
     return () => {
       socket.off("get-kitchen-ticket", handleSocketRequest);
     };
   }, [socket]);
+
+  const removeTicket = (id: number) => {
+    if (socket) socket.emit("remove-kitchen-ticket", id);
+  };
 
   return (
     <div className="h-full bg-black">
@@ -42,7 +47,15 @@ const Kitchen = () => {
 
       <div className="max-[900px]:grid-cols-2 grid grid-cols-4 gap-4 bg-black p-4 text-xl">
         {kitchenTickets.map((data) => {
-          return <KitchenTicket key={data.orderID} data={data} />;
+          return (
+            <KitchenTicket
+              key={data.orderID}
+              data={data}
+              removeTicket={() => {
+                removeTicket(data.orderID);
+              }}
+            />
+          );
         })}
       </div>
     </div>
