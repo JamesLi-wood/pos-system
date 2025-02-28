@@ -1,6 +1,6 @@
 export interface SingularOptionsType {
   title: string;
-  choices: Array<string>;
+  choices: string[];
 }
 
 export interface MultipleOptionsType {
@@ -29,8 +29,8 @@ export interface OrderType {
   name: string;
   price: number;
   quantity: number;
-  singularOptions: Array<string>;
-  multipleOptions: Array<string>;
+  singularOptions: string[];
+  multipleOptions: string[];
   specialRequests: string;
 }
 
