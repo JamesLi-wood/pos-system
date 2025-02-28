@@ -85,7 +85,7 @@ const Ticket = () => {
 
     if (response.ok) {
       if (tableName === "takeout") {
-        socket.emit("request-takeout-ticket");
+        if (socket) socket.emit("request-takeout-ticket");
         setInventory(false);
       } else {
         fetchTickets();
@@ -93,7 +93,7 @@ const Ticket = () => {
         setCurrentPrice(0);
       }
 
-      socket.emit("request-kitchen-ticket");
+      if (socket) socket.emit("request-kitchen-ticket");
     }
   };
 

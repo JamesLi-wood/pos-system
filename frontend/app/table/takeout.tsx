@@ -7,10 +7,12 @@ const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
   const socket = useSocket();
 
   useEffect(() => {
-    socket.emit("request-takeout-ticket");
+    if (socket) socket.emit("request-takeout-ticket");
   }, []);
 
   useEffect(() => {
+    if (!socket) return;
+
     const handleSocketRequest = (data: SetStateAction<TicketType[]>) => {
       setTakeoutTickets(data);
     };
@@ -36,7 +38,7 @@ const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
     );
 
     if (response.ok) {
-      socket.emit("request-takeout-ticket");
+      if (socket) socket.emit("request-takeout-ticket");
     }
   };
 
