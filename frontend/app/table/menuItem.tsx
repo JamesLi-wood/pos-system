@@ -27,7 +27,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
       name: item.name,
       price: totalPrice,
       quantity: counter,
-      singularOptions: singularOptions,
+      singularOptions: singularOptions.filter((item) => item !== null),
       multipleOptions: multipleOptions.filter((item) => item !== null),
       specialRequests: specialRequestRef.current
         ? specialRequestRef.current.value
