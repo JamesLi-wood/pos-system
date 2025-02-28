@@ -14,9 +14,21 @@ const KitchenTicket = ({
 
   const ticketMap = useMemo(() => {
     return data.ticket.map((order, idx) => {
+      const singularOptions = order.singularOptions;
+      const multipleOptions = order.multipleOptions;
+
       return (
         <div key={idx} className="px-4 py-1">
           <p>{`${order.quantity} ${order.name}`}</p>
+          {singularOptions.length > 0 && (
+            <p className="ml-4">{`- ${singularOptions.join(", ")}`}</p>
+          )}
+          {multipleOptions.length > 0 && (
+            <p className="ml-4">{`- ${multipleOptions.join(", ")}`}</p>
+          )}
+          {order.specialRequests && (
+            <p className="ml-4">{`- ${order.specialRequests}`}</p>
+          )}
         </div>
       );
     });
