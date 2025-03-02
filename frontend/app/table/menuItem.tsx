@@ -13,7 +13,10 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
   const { removeSlidedownContent, setCurrentOrder, setCurrentPrice } = context;
   const { counter, increment, decrement } = useCounter();
   const [singularOptions, setSingularOptions] = useState(
-    Array(item.singularOptions.length).fill(null)
+    Array(item.singularOptions.length).fill({
+      name: null,
+      selected: null,
+    })
   );
   const [multipleOptions, setMultipleOptions] = useState(
     Array(item.multipleOptions.choices?.length).fill(null)
@@ -22,12 +25,29 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
   const specialRequestRef = useRef<HTMLTextAreaElement>(null);
 
   const addOrder = async () => {
+    let singularIdx = -1;
+
+    const newArr = [...singularOptions];
+    newArr.map((item, idx) => {
+      if (!item.name) {
+        newArr[idx] = { ...newArr[idx], selected: false };
+        if (singularIdx === -1) singularIdx = idx;
+      }
+    });
+
+    if (singularIdx !== -1) {
+      setSingularOptions(newArr);
+      const doc = document.getElementById(`singular${singularIdx}`);
+      if (doc) doc.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
     const totalPrice = item.price * counter + additionalPrice;
     const order = {
       name: item.name,
       price: totalPrice,
       quantity: counter,
-      singularOptions: singularOptions.filter((item) => item !== null),
+      singularOptions: singularOptions.map((item) => item.name),
       multipleOptions: multipleOptions.filter((item) => item !== null),
       specialRequests: specialRequestRef.current
         ? specialRequestRef.current.value
@@ -44,8 +64,10 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
 
     const handleSingular = (idx: number, choice: string) => {
       const newArr = [...singularOptions];
-      newArr[idx] = choice;
-
+      newArr[idx] = {
+        name: choice,
+        selected: true,
+      };
       setSingularOptions(newArr);
     };
 
@@ -53,11 +75,17 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
       <div>
         {item.singularOptions.map((option, idx) => {
           return (
-            <div key={option.title}>
+            <div key={option.title} id={`singular${idx}`}>
               <div>
                 <div className="flex justify-between">
                   <p className="text-2xl">{option.title}</p>
-                  <p className="flex items-center rounded-3xl bg-gray-200 px-2 text-base text-gray-300 bg-neutral-800">
+                  <p
+                    className={`flex items-center rounded-3xl ${
+                      singularOptions[idx].selected === false
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-200"
+                    } px-2 text-base text-gray-300 bg-neutral-800`}
+                  >
                     Required
                   </p>
                 </div>
@@ -75,7 +103,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
                       type="radio"
                       className="h-8 w-6"
                       name={`singular-selection${idx}`}
-                      checked={singularOptions[idx] === choice}
+                      checked={singularOptions[idx].name === choice}
                       onChange={() => {
                         handleSingular(idx, choice);
                       }}
