@@ -169,7 +169,7 @@ const Ticket = () => {
 
         {currentOrder.length !== 0 && (
           <>
-            <hr />
+            {tickets.length !== 0 && <hr />}
             <p className="text-center">Current order</p>
             {currentOrder.map((order, idx) => {
               return (
