@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { tableContext } from "./order";
 import Item from "./item";
@@ -21,6 +21,7 @@ const Ticket = () => {
   const [tickets, setTickets] = useState<TicketType[]>([]);
   const [price, setPrice] = useState(0);
   const [showDelete, setShowDelete] = useState(false);
+  const [hasScrollbar, setHasScrollbar] = useState(false);
   const socket = useSocket();
 
   const fetchTickets = () => {
@@ -122,13 +123,31 @@ const Ticket = () => {
     setShowDelete((prevState) => !prevState);
   };
 
+  useEffect(() => {
+    const checkScrollbar = () => {
+      const parent = document.getElementById("slidedown-component");
+
+      if (parent) {
+        setHasScrollbar(parent.scrollHeight > parent.clientHeight);
+      }
+    };
+
+    setTimeout(checkScrollbar, 10);
+
+    window.addEventListener("resize", checkScrollbar);
+
+    return () => {
+      window.removeEventListener("resize", checkScrollbar);
+    };
+  }, []);
+
   return (
-    <div className="bg-inherit px-4">
-      <div className="sticky top-0 bg-inherit z-10">
+    <div className="bg-inherit">
+      <div className="sticky top-0 bg-inherit z-10 px-4">
         <p className="py-4 text-2xl">{tableName}</p>
         <hr className="mb-2" />
       </div>
-      <div className="flex flex-col">
+      <div className={`flex flex-col px-4 ${!hasScrollbar && "pb-20"}`}>
         {tickets.length !== 0 && <p className="text-center">Previous orders</p>}
         {tickets.map((orders, ticketIdx) => {
           return (
@@ -143,13 +162,14 @@ const Ticket = () => {
                   />
                 );
               })}
-              <hr className="my-2" />
+              {ticketIdx !== tickets.length - 1 && <hr className="my-2" />}
             </div>
           );
         })}
 
         {currentOrder.length !== 0 && (
           <>
+            <hr />
             <p className="text-center">Current order</p>
             {currentOrder.map((order, idx) => {
               return (
@@ -165,7 +185,11 @@ const Ticket = () => {
         )}
       </div>
 
-      <div className="sticky bottom-0 bg-inherit flex flex-col">
+      <div
+        className={`${
+          hasScrollbar ? "sticky" : "absolute"
+        } bottom-0 bg-inherit left-0 right-0 px-4`}
+      >
         <hr />
         <div className="flex justify-between text-xl">
           <p>Subtotal</p>
