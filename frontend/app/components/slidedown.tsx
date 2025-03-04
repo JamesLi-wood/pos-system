@@ -9,7 +9,7 @@ const SlideDown = ({
   handleClick: React.MouseEventHandler<HTMLButtonElement>;
 }) => {
   return (
-    <div className="scroll-hidden pointer-events-auto absolute top-1/2 left-1/2 h-4/5 w-2/5 -translate-x-1/2 -translate-y-1/2 overflow-y-scroll rounded-2xl bg-neutral-950 max-md:w-full">
+    <div id="slidedown-component" className="scroll-hidden pointer-events-auto absolute top-1/2 left-1/2 h-4/5 w-2/5 -translate-x-1/2 -translate-y-1/2 overflow-y-scroll rounded-2xl bg-neutral-950 max-md:w-full">
       <div className="sticky top-0 flex justify-end z-20">
         <button
           className="flex h-10 w-10 -translate-x-3 translate-y-3 items-center justify-center rounded-3xl bg-red-500"
