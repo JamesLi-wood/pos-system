@@ -1,7 +1,8 @@
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { tableContext } from "./order";
 import Item from "./item";
+import { VscChromeClose } from "react-icons/vsc";
 import { TicketType } from "../types";
 
 const Ticket = () => {
@@ -24,8 +25,8 @@ const Ticket = () => {
   const [hasScrollbar, setHasScrollbar] = useState(false);
   const socket = useSocket();
 
-  const fetchTickets = () => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/ticket/get-ticket`, {
+  const fetchTickets = async () => {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/ticket/get-ticket`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -119,10 +120,6 @@ const Ticket = () => {
     }
   };
 
-  const activateDelete = () => {
-    setShowDelete((prevState) => !prevState);
-  };
-
   useEffect(() => {
     const checkScrollbar = () => {
       const parent = document.getElementById("slidedown-component");
@@ -154,12 +151,17 @@ const Ticket = () => {
             <div key={orders.orderID}>
               {orders.ticket.map((item: any, itemIdx: number) => {
                 return (
-                  <Item
-                    key={itemIdx}
-                    item={item}
-                    handleRemove={() => removeItem(ticketIdx, itemIdx)}
-                    showDelete={showDelete}
-                  />
+                  <div key={itemIdx} className="flex">
+                    {showDelete && (
+                      <button
+                        className="w-7 flex items-center justify-center p-1 cursor-pointer border-none bg-[rgb(255,0,0)] text-white"
+                        onClick={() => removeItem(ticketIdx, itemIdx)}
+                      >
+                        <VscChromeClose />
+                      </button>
+                    )}
+                    <Item item={item} />
+                  </div>
                 );
               })}
               {ticketIdx !== tickets.length - 1 && <hr className="my-2" />}
@@ -173,12 +175,17 @@ const Ticket = () => {
             <p className="text-center">Current order</p>
             {currentOrder.map((order, idx) => {
               return (
-                <Item
-                  key={idx}
-                  item={order}
-                  handleRemove={() => removeCurrentItem(idx)}
-                  showDelete={showDelete}
-                />
+                <div key={idx} className="flex">
+                  {showDelete && (
+                    <button
+                      className="w-7 flex items-center justify-center p-1 cursor-pointer border-none bg-[rgb(255,0,0)] text-white"
+                      onClick={() => removeCurrentItem(idx)}
+                    >
+                      <VscChromeClose />
+                    </button>
+                  )}
+                  <Item item={order} />
+                </div>
               );
             })}
           </>
@@ -199,7 +206,10 @@ const Ticket = () => {
           <button className="bg-green-500 p-2" onClick={sendKitchen}>
             Send to kitchen
           </button>
-          <button className="bg-red-500 p-2" onClick={activateDelete}>
+          <button
+            className="bg-red-500 p-2"
+            onClick={() => setShowDelete((prevState) => !prevState)}
+          >
             Remove Item
           </button>
           {tableName !== "takeout" && (
