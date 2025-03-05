@@ -79,11 +79,7 @@ const Order = ({
 
   return (
     <tableContext.Provider value={contextValue}>
-      <div
-        className={`flex flex-col justify-between bg-black text-white h-full ${
-          slidedownContent && "pointer-events-none"
-        }`}
-      >
+      <div className="flex flex-col justify-between bg-black text-white h-full">
         <div className="flex gap-4">
           <div className="text-4xl">{tableName}</div>
           <button
