@@ -3,10 +3,10 @@ import { VscChromeClose } from "react-icons/vsc";
 
 const SlideDown = ({
   children,
-  handleClick: removeSlidedownContent,
+  handleRemove: removeSlidedownContent,
 }: {
   children: React.ReactNode;
-  handleClick: React.MouseEventHandler<HTMLButtonElement>;
+  handleRemove: () => void;
 }) => {
   return (
     <div className="absolute top-0 right-0 left-0 bottom-0">
