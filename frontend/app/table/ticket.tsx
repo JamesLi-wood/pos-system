@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { tableContext } from "./order";
 import Item from "./item";
@@ -23,6 +23,8 @@ const Ticket = () => {
   const [price, setPrice] = useState(0);
   const [showDelete, setShowDelete] = useState(false);
   const [hasScrollbar, setHasScrollbar] = useState(false);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const phoneRef = useRef<HTMLInputElement | null>(null);
   const socket = useSocket();
 
   const fetchTickets = async () => {
@@ -68,6 +70,16 @@ const Ticket = () => {
   };
 
   const sendKitchen = async () => {
+    const isTakeout = tableName === "takeout";
+
+    if (isTakeout) {
+      const hasName = nameRef.current?.value !== "";
+      const hasNumber = phoneRef.current?.value !== "";
+      if (!hasName || !hasNumber) {
+        return;
+      }
+    }
+
     if (currentOrder.length === 0) return;
 
     const response = await fetch(
@@ -81,12 +93,14 @@ const Ticket = () => {
           tableName: tableName,
           ticket: currentOrder,
           totalPrice: currentPrice,
+          name: nameRef.current?.value,
+          phoneNumber: phoneRef.current?.value,
         }),
       }
     );
 
     if (response.ok) {
-      if (tableName === "takeout") {
+      if (isTakeout) {
         if (socket) socket.emit("request-takeout-ticket");
         setInventory(false);
       } else {
@@ -123,16 +137,13 @@ const Ticket = () => {
   useEffect(() => {
     const checkScrollbar = () => {
       const parent = document.getElementById("slidedown-component");
-
       if (parent) {
         setHasScrollbar(parent.scrollHeight > parent.clientHeight);
       }
     };
 
     setTimeout(checkScrollbar, 10);
-
     window.addEventListener("resize", checkScrollbar);
-
     return () => {
       window.removeEventListener("resize", checkScrollbar);
     };
@@ -142,6 +153,28 @@ const Ticket = () => {
     <div className="bg-inherit">
       <div className="sticky top-0 bg-inherit z-10 px-4">
         <p className="py-4 text-2xl">{tableName}</p>
+        {tableName === "takeout" && (
+          <div className="flex flex-col mb-4 gap-2">
+            <div className="flex gap-2">
+              <p>NAME</p>
+              <input
+                className="text-base bg-transparent border border-gray-500 resize-none text-white w-full outline-none"
+                type="text"
+                ref={nameRef}
+              />
+            </div>
+            <div className="flex gap-2">
+              <p>NUMBER</p>
+              <input
+                className="text-base bg-transparent border border-gray-500 resize-none text-white w-full outline-none"
+                type="tel"
+                inputMode="numeric"
+                ref={phoneRef}
+              />
+            </div>
+          </div>
+        )}
+
         <hr className="mb-2" />
       </div>
       <div className={`flex flex-col px-4 ${!hasScrollbar && "pb-20"}`}>
