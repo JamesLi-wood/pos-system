@@ -110,7 +110,7 @@ const Order = ({
         </div>
 
         {slidedownContent && (
-          <SlideDown handleClick={removeSlidedownContent}>
+          <SlideDown handleRemove={removeSlidedownContent}>
             {slidedownContent}
           </SlideDown>
         )}
