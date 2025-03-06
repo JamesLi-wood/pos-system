@@ -18,10 +18,10 @@ module.exports = (ticketManager) => {
   });
 
   router.post("/add-ticket", (req, res) => {
-    const { tableName, ticket, totalPrice } = req.body;
+    const { tableName, ticket, totalPrice, name, phoneNumber } = req.body;
     try {
       if (tableName == "takeout") {
-        ticketManager.addTakeoutTicket(ticket);
+        ticketManager.addTakeoutTicket(ticket, name, phoneNumber);
       } else {
         ticketManager.addTicket(tableName, ticket, totalPrice);
       }
