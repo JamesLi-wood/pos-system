@@ -78,12 +78,14 @@ class TicketManager {
     );
   }
 
-  addTakeoutTicket(ticket) {
+  addTakeoutTicket(ticket, name, phoneNumber) {
     const dateCreated = new Date().getTime();
     const updatedTicket = {
       dateCreated: dateCreated,
       orderID: this.orderID,
       ticket: ticket,
+      name: name,
+      phoneNumber: phoneNumber,
     };
     this.orderID++;
 
