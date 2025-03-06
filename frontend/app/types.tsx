@@ -49,4 +49,6 @@ export interface TicketType {
   dateCreated: number;
   orderID: number;
   ticket: OrderType[];
+  name: string | null;
+  phoneNumber: string | null;
 }
