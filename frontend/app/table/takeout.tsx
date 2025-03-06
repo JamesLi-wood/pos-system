@@ -1,9 +1,12 @@
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState, useMemo } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { TicketType } from "../types";
+import SlideDown from "../components/slidedown";
+import Item from "./item";
 
 const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
-  const [takeoutTickets, setTakeoutTickets] = useState<any>([]);
+  const [takeoutTickets, setTakeoutTickets] = useState<TicketType[]>([]);
+  const [takeoutDetails, setTakeoutDetails] = useState<TicketType | null>(null);
   const socket = useSocket();
 
   useEffect(() => {
@@ -42,44 +45,83 @@ const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
     }
   };
 
+  const handleTakeoutTickets = useMemo(() => {
+    return takeoutTickets.map((data: TicketType) => {
+      return (
+        <div
+          key={data.orderID}
+          className="py-4 bg-[rgb(211,211,211)] text-black mb-2 w-[90%] rounded-2xl"
+        >
+          <div className="flex flex-col items-start justify-between px-4">
+            <div>
+              <p>{`Order# ${data.orderID}`}</p>
+              <p>{data.name}</p>
+              <p>{data.phoneNumber}</p>
+            </div>
+            <div className="flex w-full gap-1 justify-center">
+              <button
+                className="cursor-pointer rounded border-none bg-[rgb(0,139,139)] p-4 text-white"
+                onClick={() => {
+                  setTakeoutDetails(data);
+                }}
+              >
+                Details
+              </button>
+              <button
+                className="cursor-pointer rounded border-none bg-red-500 p-4 text-white"
+                onClick={() => removeOrder(data.orderID)}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    });
+  }, [takeoutTickets]);
+
   return (
     <div>
-      <p className="text-center">Takeout</p>
+      <p className="text-center text-2xl">Takeout</p>
       <div>
-        <div className="flex justify-center bg-gray-300 py-4">
+        <div className="flex justify-center bg-[rgb(64,64,64)] py-4 mb-2">
           <button
-            className="cursor-pointer rounded border-none bg-[rgb(0,139,139)] p-4 text-white"
+            className="cursor-pointer rounded border-none bg-[rgb(44,117,255)] p-4 text-white"
             onClick={activateInventory}
           >
             Create Order
           </button>
         </div>
 
-        {takeoutTickets.map((data: any) => {
-          return (
-            <div key={data.orderID} className="border border-black py-4">
-              <div className="flex flex-col items-start justify-between">
-                <div>
-                  <p>{`Order#: ${data.orderID}`}</p>
-                  <p>Customer Name</p>
-                  <p>Customer Phone Number</p>
-                </div>
-                <div className="flex w-full gap-1 justify-center">
-                  <button className="cursor-pointer rounded border-none bg-[rgb(0,139,139)] p-4 text-white">
-                    Details
-                  </button>
-                  <button
-                    className="cursor-pointer rounded border-none bg-[rgb(255,0,0)] p-4 text-white"
-                    onClick={() => removeOrder(data.orderID)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        <div className="flex items-center flex-col">{handleTakeoutTickets}</div>
       </div>
+
+      {takeoutDetails && (
+        <SlideDown
+          handleRemove={() => {
+            setTakeoutDetails(null);
+          }}
+        >
+          <div className="bg-inherit px-4">
+            <div className="sticky top-0 z-10 bg-inherit text-3xl">
+              <p className="py-4">{`Order# ${takeoutDetails.orderID}`}</p>
+              <hr />
+            </div>
+
+            <div className="my-2 flex gap-2 text-lg">
+              <p>{takeoutDetails.name}</p>
+              <p>{takeoutDetails.phoneNumber}</p>
+            </div>
+            <hr />
+
+            <div className="text-lg">
+              {takeoutDetails.ticket.map((ticket, idx) => {
+                return <Item key={idx} item={ticket} />;
+              })}
+            </div>
+          </div>
+        </SlideDown>
+      )}
     </div>
   );
 };
