@@ -28,13 +28,15 @@ const Ticket = () => {
   const socket = useSocket();
 
   const fetchTickets = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/ticket/get-ticket`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ tableName }),
-    })
+    await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/get-ticket/${tableName}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         setTickets(data.ticket);
@@ -47,17 +49,19 @@ const Ticket = () => {
   }, []);
 
   const removeItem = async (orderIdx: number, itemIdx: number) => {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/ticket/remove-item`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        tableName: tableName,
-        orderIdx: orderIdx,
-        itemIdx: itemIdx,
-      }),
-    });
+    await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/remove-item/${tableName}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderIdx: orderIdx,
+          itemIdx: itemIdx,
+        }),
+      }
+    );
 
     if (tableName !== "takeout") fetchTickets();
   };
@@ -83,14 +87,13 @@ const Ticket = () => {
     if (currentOrder.length === 0) return;
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/add-ticket`,
+      `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/add-ticket/${tableName}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          tableName: tableName,
           ticket: currentOrder,
           totalPrice: currentPrice,
           name: nameRef.current?.value,
@@ -115,15 +118,12 @@ const Ticket = () => {
 
   const handlePay = async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/clear-ticket`,
+      `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/clear-ticket/${tableName}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          tableName: tableName,
-        }),
       }
     );
 
