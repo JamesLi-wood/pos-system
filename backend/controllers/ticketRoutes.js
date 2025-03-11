@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 module.exports = (ticketManager) => {
-  router.post("/get-ticket", (req, res) => {
-    const { tableName } = req.body;
+  router.post("/get-ticket/:tableName", (req, res) => {
+    const { tableName } = req.params;
     const ticket = ticketManager.getTicket(tableName);
     const price = ticketManager.getPrice(tableName);
 
@@ -17,8 +17,9 @@ module.exports = (ticketManager) => {
     }
   });
 
-  router.post("/add-ticket", (req, res) => {
-    const { tableName, ticket, totalPrice, name, phoneNumber } = req.body;
+  router.post("/add-ticket/:tableName", (req, res) => {
+    const { tableName } = req.params;
+    const { ticket, totalPrice, name, phoneNumber } = req.body;
     try {
       if (tableName == "takeout") {
         ticketManager.addTakeoutTicket(ticket, name, phoneNumber);
@@ -32,8 +33,8 @@ module.exports = (ticketManager) => {
     }
   });
 
-  router.post("/clear-ticket", (req, res) => {
-    const { tableName } = req.body;
+  router.post("/clear-ticket/:tableName", (req, res) => {
+    const { tableName } = req.params;
     try {
       ticketManager.clearTicket(tableName);
       res.sendStatus(204);
@@ -42,8 +43,9 @@ module.exports = (ticketManager) => {
     }
   });
 
-  router.post("/remove-item", (req, res) => {
-    const { tableName, orderIdx, itemIdx } = req.body;
+  router.post("/remove-item/:tableName", (req, res) => {
+    const { tableName } = req.params;
+    const { orderIdx, itemIdx } = req.body;
     try {
       ticketManager.removeItem(tableName, orderIdx, itemIdx);
       res.sendStatus(204);
