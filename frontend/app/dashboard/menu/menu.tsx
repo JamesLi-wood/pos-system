@@ -1,23 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
 import SectionedMenu from "./sectionedMenu";
 import MenuItems from "./menuItems";
-import { MenuType, MenuItemType } from "../../types";
+import { MenuItemType } from "../../types";
+import useFetchRestaurantData from "@/app/hooks/useFetchRestaurantData";
 
 const Menu = () => {
-  const [menu, setMenu] = useState<MenuType[]>([]);
+  const { menu, loading, refetchData } = useFetchRestaurantData();
   const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/order/menu`)
-      .then((res) => res.json())
-      .then((data) => {
-        setMenu(data.menu);
-        setMenuItems(data.menu[0].data);
-      });
-  }, []);
+    if (!loading && menu.length > 0) setMenuItems(menu[0].data);
+  }, [menu, loading]);
 
   const displaySectionedMenu = useMemo(() => {
-    return <SectionedMenu menu={menu} setMenuItems={setMenuItems} />;
+    return (
+      <SectionedMenu
+        menu={menu}
+        setMenuItems={setMenuItems}
+        refetchData={refetchData}
+      />
+    );
   }, [menu]);
 
   return (
