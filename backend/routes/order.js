@@ -10,13 +10,17 @@ fetchTables().then((tableNames) => {
 });
 
 router.get("/menu", async (req, res) => {
-  const menu = await getMenu();
-  const tables = await fetchTables();
+  try {
+    const menu = await getMenu();
+    const tables = await fetchTables();
 
-  res.status(200).send({
-    menu: menu,
-    tables: tables,
-  });
+    res.status(200).send({
+      menu: menu,
+      tables: tables,
+    });
+  } catch (error) {
+    res.status(500).send({ error: "Failed to fetch" });
+  }
 });
 
 module.exports = router;
