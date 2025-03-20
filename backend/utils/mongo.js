@@ -59,8 +59,8 @@ async function getMenu() {
 
     return allData;
   } catch (error) {
-    console.log(error);
-    return null;
+    console.error("Error fetching menu:", error);
+    throw new Error("Failed to fetch menu");
   }
 }
 
@@ -73,8 +73,26 @@ async function fetchTables() {
     );
     return tableNames;
   } catch (error) {
+    console.error("Error fetching tables:", error);
+    throw new Error("Failed to fetch tables");
+  }
+}
+
+async function addSectionedMenu(name) {
+  try {
+    const db = client.db("menu");
+    await db.createCollection(name);
+  } catch (error) {
     console.log(error);
-    return null;
+  }
+}
+
+async function deleteSectionedMenu(name) {
+  try {
+    const db = client.db("menu");
+    await db.collection(name).drop();
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -83,4 +101,6 @@ module.exports = {
   validateUser: validateUser,
   getMenu: getMenu,
   fetchTables: fetchTables,
+  addSectionedMenu: addSectionedMenu,
+  deleteSectionedMenu: deleteSectionedMenu,
 };
