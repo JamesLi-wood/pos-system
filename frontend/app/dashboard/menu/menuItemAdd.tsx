@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, Dispatch, SetStateAction } from "react";
 
 interface GroupType {
   id: number;
@@ -12,10 +12,14 @@ const Groups = ({
   data,
   addItem,
   removeItem,
+  handleNameChange,
+  handlePriceChange,
 }: {
   data: GroupType;
   addItem: () => void;
   removeItem: (itemIdx: number) => void;
+  handleNameChange: (itemIdx: number, value: string) => void;
+  handlePriceChange: (itemIdx: number, value: number) => void;
 }) => {
   return (
     <div>
@@ -25,7 +29,18 @@ const Groups = ({
           return (
             <div key={idx} className="flex gap-4">
               <p>choice {idx}</p>
-              <input type="text" className="text-black" />
+              <input
+                type="text"
+                className="text-black"
+                onChange={(e) => handleNameChange(idx, e.target.value)}
+                value={choice.name}
+              />
+              <input
+                type="number"
+                className="text-black"
+                onChange={(e) => handlePriceChange(idx, Number(e.target.value))}
+                value={choice.price}
+              />
               <button onClick={() => removeItem(idx)}>remove</button>
             </div>
           );
@@ -48,6 +63,7 @@ const MenuItemAdd = () => {
     console.log(nameRef.current?.value);
     console.log(descriptionRef.current?.value);
     console.log(priceRef.current?.value);
+    console.log(singularData)
   };
 
   const addSingularGroup = () => {
@@ -70,8 +86,11 @@ const MenuItemAdd = () => {
     setSingularData((prevState) => prevState.filter((data) => data.id !== id));
   };
 
-  const addSingularItem = (idx: number) => {
-    setSingularData((prevState) => {
+  const addGroupItem = (
+    setState: Dispatch<SetStateAction<GroupType[]>>,
+    idx: number
+  ) => {
+    setState((prevState) => {
       const newState = [...prevState];
       newState[idx] = {
         ...newState[idx],
@@ -81,13 +100,43 @@ const MenuItemAdd = () => {
     });
   };
 
-  const removeSingularItem = (groupIdx: number, itemIdx: number) => {
-    setSingularData((prevState) => {
+  const removeGroupItem = (
+    setState: Dispatch<SetStateAction<GroupType[]>>,
+    groupIdx: number,
+    itemIdx: number
+  ) => {
+    setState((prevState) => {
       const newState = [...prevState];
       newState[groupIdx] = {
         ...newState[groupIdx],
         choices: newState[groupIdx].choices.filter((_, idx) => idx !== itemIdx),
       };
+      return newState;
+    });
+  };
+
+  const handleNameChange = (
+    setState: Dispatch<SetStateAction<GroupType[]>>,
+    groupIdx: number,
+    itemIdx: number,
+    value: string
+  ) => {
+    setState((prevState) => {
+      const newState = [...prevState];
+      newState[groupIdx].choices[itemIdx].name = value;
+      return newState;
+    });
+  };
+
+  const handlePriceChange = (
+    setState: Dispatch<SetStateAction<GroupType[]>>,
+    groupIdx: number,
+    itemIdx: number,
+    value: number
+  ) => {
+    setState((prevState) => {
+      const newState = [...prevState];
+      newState[groupIdx].choices[itemIdx].price = value;
       return newState;
     });
   };
@@ -100,8 +149,16 @@ const MenuItemAdd = () => {
             <div key={idx} className="border">
               <Groups
                 data={singularData[idx]}
-                addItem={() => addSingularItem(idx)}
-                removeItem={(itemIdx) => removeSingularItem(idx, itemIdx)}
+                addItem={() => addGroupItem(setSingularData, idx)}
+                removeItem={(itemIdx) =>
+                  removeGroupItem(setSingularData, idx, itemIdx)
+                }
+                handleNameChange={(itemIdx, value) =>
+                  handleNameChange(setSingularData, idx, itemIdx, value)
+                }
+                handlePriceChange={(itemIdx, value) =>
+                  handlePriceChange(setSingularData, idx, itemIdx, value)
+                }
               />
               <button
                 onClick={() => {
