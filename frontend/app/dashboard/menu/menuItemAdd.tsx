@@ -1,47 +1,42 @@
-import { useState, useRef, useMemo, Dispatch, SetStateAction } from "react";
+import React, {
+  useState,
+  useRef,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 interface GroupType {
   id: number;
-  title: string;
-  choices: {
-    name: string;
-    price: number;
-  }[];
+  name: React.RefObject<HTMLInputElement | null>;
+  price: React.RefObject<HTMLInputElement | null>;
 }
+
+interface SingularType {
+  id: number;
+  title: React.RefObject<HTMLInputElement | null>;
+  choices: GroupType[];
+}
+
 const Groups = ({
   data,
   addItem,
   removeItem,
-  handleNameChange,
-  handlePriceChange,
 }: {
-  data: GroupType;
+  data: GroupType[];
   addItem: () => void;
   removeItem: (itemIdx: number) => void;
-  handleNameChange: (itemIdx: number, value: string) => void;
-  handlePriceChange: (itemIdx: number, value: number) => void;
 }) => {
   return (
     <div>
-      <div>GROUP {data.id}</div>
       <div>
-        {data.choices.map((choice, idx) => {
+        {data.map((choice) => {
           return (
-            <div key={idx} className="flex gap-4">
-              <p>choice {idx}</p>
-              <input
-                type="text"
-                className="text-black"
-                onChange={(e) => handleNameChange(idx, e.target.value)}
-                value={choice.name}
-              />
-              <input
-                type="number"
-                className="text-black"
-                onChange={(e) => handlePriceChange(idx, Number(e.target.value))}
-                value={choice.price}
-              />
-              <button onClick={() => removeItem(idx)}>remove</button>
+            <div key={choice.id} className="flex gap-4">
+              <p>choice {choice.id}</p>
+              <input ref={choice.name} type="text" className="text-black" />
+              <input ref={choice.price} type="number" className="text-black" />
+              <button onClick={() => removeItem(choice.id)}>remove</button>
             </div>
           );
         })}
@@ -55,88 +50,79 @@ const MenuItemAdd = () => {
   const nameRef = useRef<HTMLInputElement | null>(null);
   const descriptionRef = useRef<HTMLInputElement | null>(null);
   const priceRef = useRef<HTMLInputElement | null>(null);
-  const [singularGroup, setSingularGroup] = useState<number[]>([]);
-  const [singularData, setSingularData] = useState<GroupType[]>([]);
   const idCounter = useRef(1);
+  const [singularGroup, setSingularGroup] = useState<SingularType[]>([]);
+  const [multipleGroup, setMultipleGroup] = useState<SingularType[]>([
+    {
+      id: 0,
+      title: React.createRef<HTMLInputElement>(),
+      choices: [],
+    },
+  ]);
 
   const addMenuItem = () => {
     console.log(nameRef.current?.value);
     console.log(descriptionRef.current?.value);
     console.log(priceRef.current?.value);
-    console.log(singularData)
+    console.log(singularGroup);
+    console.log(multipleGroup);
   };
 
   const addSingularGroup = () => {
-    const newID = idCounter.current++;
-    setSingularGroup((prevState) => [...prevState, newID]);
-    setSingularData((prevState) => [
+    const newId = idCounter.current++;
+    setSingularGroup((prevState) => [
       ...prevState,
       {
-        id: newID,
-        title: "",
+        id: newId,
+        title: React.createRef<HTMLInputElement>(),
         choices: [],
       },
     ]);
   };
 
   const removeSingularGroup = (id: number) => {
-    setSingularGroup((prevState) =>
-      prevState.filter((groupID) => groupID !== id)
-    );
-    setSingularData((prevState) => prevState.filter((data) => data.id !== id));
+    setSingularGroup((prevState) => prevState.filter((data) => data.id !== id));
   };
 
   const addGroupItem = (
-    setState: Dispatch<SetStateAction<GroupType[]>>,
+    setState: Dispatch<SetStateAction<SingularType[]>>,
     idx: number
   ) => {
+    const newId = idCounter.current++;
     setState((prevState) => {
       const newState = [...prevState];
+
       newState[idx] = {
         ...newState[idx],
-        choices: [...newState[idx].choices, { name: "", price: 0 }],
+        choices: [
+          ...newState[idx].choices,
+          {
+            id: newId,
+            name: React.createRef<HTMLInputElement>(),
+            price: React.createRef<HTMLInputElement>(),
+          },
+        ],
       };
+
       return newState;
     });
   };
 
   const removeGroupItem = (
-    setState: Dispatch<SetStateAction<GroupType[]>>,
+    setState: Dispatch<SetStateAction<SingularType[]>>,
     groupIdx: number,
-    itemIdx: number
+    itemId: number
   ) => {
     setState((prevState) => {
       const newState = [...prevState];
+
       newState[groupIdx] = {
         ...newState[groupIdx],
-        choices: newState[groupIdx].choices.filter((_, idx) => idx !== itemIdx),
+        choices: newState[groupIdx].choices.filter(
+          (data) => data.id !== itemId
+        ),
       };
-      return newState;
-    });
-  };
 
-  const handleNameChange = (
-    setState: Dispatch<SetStateAction<GroupType[]>>,
-    groupIdx: number,
-    itemIdx: number,
-    value: string
-  ) => {
-    setState((prevState) => {
-      const newState = [...prevState];
-      newState[groupIdx].choices[itemIdx].name = value;
-      return newState;
-    });
-  };
-
-  const handlePriceChange = (
-    setState: Dispatch<SetStateAction<GroupType[]>>,
-    groupIdx: number,
-    itemIdx: number,
-    value: number
-  ) => {
-    setState((prevState) => {
-      const newState = [...prevState];
-      newState[groupIdx].choices[itemIdx].price = value;
       return newState;
     });
   };
@@ -144,25 +130,20 @@ const MenuItemAdd = () => {
   const loadSingularGroups = useMemo(() => {
     return (
       <div>
-        {singularGroup.map((id, idx) => {
+        {singularGroup.map((data, idx) => {
           return (
-            <div key={idx} className="border">
+            <div key={data.id} className="border">
+              <input ref={data.title} type="text" className="text-black" />
               <Groups
-                data={singularData[idx]}
-                addItem={() => addGroupItem(setSingularData, idx)}
+                data={data.choices}
+                addItem={() => addGroupItem(setSingularGroup, idx)}
                 removeItem={(itemIdx) =>
-                  removeGroupItem(setSingularData, idx, itemIdx)
-                }
-                handleNameChange={(itemIdx, value) =>
-                  handleNameChange(setSingularData, idx, itemIdx, value)
-                }
-                handlePriceChange={(itemIdx, value) =>
-                  handlePriceChange(setSingularData, idx, itemIdx, value)
+                  removeGroupItem(setSingularGroup, idx, itemIdx)
                 }
               />
               <button
                 onClick={() => {
-                  removeSingularGroup(id);
+                  removeSingularGroup(data.id);
                 }}
               >
                 REMOVE
@@ -170,9 +151,31 @@ const MenuItemAdd = () => {
             </div>
           );
         })}
+        <button onClick={addSingularGroup}>+</button>
       </div>
     );
-  }, [singularGroup, singularData]);
+  }, [singularGroup]);
+
+  const loadMultipleGroup = useMemo(() => {
+    return (
+      <div>
+        <div className="border">
+          <input
+            ref={multipleGroup[0].title}
+            type="text"
+            className="text-black"
+          />
+          <Groups
+            data={multipleGroup[0].choices}
+            addItem={() => addGroupItem(setMultipleGroup, 0)}
+            removeItem={(itemIdx) =>
+              removeGroupItem(setMultipleGroup, 0, itemIdx)
+            }
+          />
+        </div>
+      </div>
+    );
+  }, [multipleGroup]);
 
   return (
     <div>
@@ -194,15 +197,11 @@ const MenuItemAdd = () => {
       <div>
         <p>Singular Options</p>
         {loadSingularGroups}
-        <button onClick={addSingularGroup}>+</button>
       </div>
 
       <div className="flex flex-col">
         <p>Multiple Options</p>
-
-        <div>
-          <button>+</button>
-        </div>
+        {loadMultipleGroup}
       </div>
 
       <button onClick={addMenuItem}>ADD</button>
