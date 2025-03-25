@@ -5,6 +5,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
+import { VscChromeClose } from "react-icons/vsc";
 
 interface GroupType {
   id: number;
@@ -14,63 +15,91 @@ interface GroupType {
 
 interface SingularType {
   id: number;
-  title: React.RefObject<HTMLInputElement | null>;
+  title: React.RefObject<HTMLInputElement | null> | null;
   choices: GroupType[];
 }
 
 const Groups = ({
   data,
-  addItem,
   removeItem,
 }: {
   data: GroupType[];
-  addItem: () => void;
   removeItem: (itemIdx: number) => void;
 }) => {
   return (
-    <div>
-      <div>
-        {data.map((choice) => {
-          return (
-            <div key={choice.id} className="flex gap-4">
-              <p>choice {choice.id}</p>
-              <input ref={choice.name} type="text" className="text-black" />
-              <input ref={choice.price} type="number" className="text-black" />
-              <button onClick={() => removeItem(choice.id)}>remove</button>
+    <div className="flex flex-col items-center">
+      {data.map((choice, idx) => {
+        return (
+          <div key={choice.id}>
+            <div className="flex flex-row gap-4 justify-center">
+              <div className="flex flex-col">
+                <input
+                  ref={choice.name}
+                  type="text"
+                  className="text-base my-2 bg-transparent border border-gray-500 p-2 outline-none"
+                  placeholder="Name"
+                />
+                <input
+                  ref={choice.price}
+                  type="number"
+                  className="text-base my-2 bg-transparent border border-gray-500 p-2 outline-none"
+                  placeholder="Price"
+                />
+              </div>
+              <button
+                className="bg-red-500 h-10 my-2 p-3"
+                onClick={() => removeItem(choice.id)}
+              >
+                <VscChromeClose />
+              </button>
             </div>
-          );
-        })}
-      </div>
-      <button onClick={addItem}>ADD ITEM</button>
+            {idx !== data.length - 1 && <hr className="my-3" />}
+          </div>
+        );
+      })}
     </div>
   );
 };
 
-const MenuItemAdd = () => {
+const MenuItemAdd = ({ sectionedMenu }: { sectionedMenu: string }) => {
   const nameRef = useRef<HTMLInputElement | null>(null);
   const descriptionRef = useRef<HTMLInputElement | null>(null);
   const priceRef = useRef<HTMLInputElement | null>(null);
   const idCounter = useRef(1);
-  const [singularGroup, setSingularGroup] = useState<SingularType[]>([]);
-  const [multipleGroup, setMultipleGroup] = useState<SingularType[]>([
+  const [requiredOptions, setRequiredOptions] = useState<SingularType[]>([]);
+  const [additionalChoices, setAdditionalChoices] = useState<SingularType[]>([
     {
       id: 0,
-      title: React.createRef<HTMLInputElement>(),
+      title: null,
       choices: [],
     },
   ]);
 
   const addMenuItem = () => {
-    console.log(nameRef.current?.value);
-    console.log(descriptionRef.current?.value);
-    console.log(priceRef.current?.value);
-    console.log(singularGroup);
-    console.log(multipleGroup);
+    const nameField = nameRef.current?.value;
+    const descriptionField = descriptionRef.current?.value;
+    const priceField = Number(priceRef.current?.value).toFixed(2);
+    const requiredField = requiredOptions.map((option) => {
+      const title = option.title?.current?.value;
+      const choices = option.choices.map((choice) => {
+        return {
+          name: choice.name.current?.value,
+          price: Number(choice.price.current?.value).toFixed(2),
+        };
+      });
+      return { title: title, choices: choices };
+    });
+    const additionalField = additionalChoices[0].choices.map((choice) => {
+      return {
+        name: choice.name.current?.value,
+        price: Number(choice.price.current?.value).toFixed(2),
+      };
+    });
   };
 
   const addSingularGroup = () => {
     const newId = idCounter.current++;
-    setSingularGroup((prevState) => [
+    setRequiredOptions((prevState) => [
       ...prevState,
       {
         id: newId,
@@ -81,7 +110,9 @@ const MenuItemAdd = () => {
   };
 
   const removeSingularGroup = (id: number) => {
-    setSingularGroup((prevState) => prevState.filter((data) => data.id !== id));
+    setRequiredOptions((prevState) =>
+      prevState.filter((data) => data.id !== id)
+    );
   };
 
   const addGroupItem = (
@@ -127,84 +158,126 @@ const MenuItemAdd = () => {
     });
   };
 
-  const loadSingularGroups = useMemo(() => {
+  const loadRequiredOptions = useMemo(() => {
     return (
-      <div>
-        {singularGroup.map((data, idx) => {
-          return (
-            <div key={data.id} className="border">
-              <input ref={data.title} type="text" className="text-black" />
-              <Groups
-                data={data.choices}
-                addItem={() => addGroupItem(setSingularGroup, idx)}
-                removeItem={(itemIdx) =>
-                  removeGroupItem(setSingularGroup, idx, itemIdx)
-                }
-              />
-              <button
-                onClick={() => {
-                  removeSingularGroup(data.id);
-                }}
-              >
-                REMOVE
-              </button>
-            </div>
-          );
-        })}
-        <button onClick={addSingularGroup}>+</button>
-      </div>
-    );
-  }, [singularGroup]);
+      <div className="p-4 border border-x-0 border-t-0 border-white">
+        <div className="flex justify-center items-center gap-4">
+          <p className="text-2xl">Required Options</p>
+          <button
+            className="border border-gray-500 py-1 px-3"
+            onClick={addSingularGroup}
+          >
+            +
+          </button>
+        </div>
 
-  const loadMultipleGroup = useMemo(() => {
-    return (
-      <div>
-        <div className="border">
-          <input
-            ref={multipleGroup[0].title}
-            type="text"
-            className="text-black"
-          />
-          <Groups
-            data={multipleGroup[0].choices}
-            addItem={() => addGroupItem(setMultipleGroup, 0)}
-            removeItem={(itemIdx) =>
-              removeGroupItem(setMultipleGroup, 0, itemIdx)
-            }
-          />
+        <div className="flex flex-col gap-3">
+          {requiredOptions.map((data, idx) => {
+            return (
+              <div key={data.id}>
+                <div className="flex gap-4 flex-row items-center justify-center">
+                  <p className="text-xl">Title</p>
+                  <input
+                    ref={data.title}
+                    type="text"
+                    className="text-base my-2 bg-transparent border border-gray-500 p-2 outline-none"
+                  />
+                </div>
+
+                <Groups
+                  data={data.choices}
+                  removeItem={(itemIdx) =>
+                    removeGroupItem(setRequiredOptions, idx, itemIdx)
+                  }
+                />
+                <div className="flex justify-center gap-4 mt-2">
+                  <button
+                    className="bg-green-500 p-2"
+                    onClick={() => {
+                      addGroupItem(setRequiredOptions, idx);
+                    }}
+                  >
+                    Add Item
+                  </button>
+                  <button
+                    className="bg-red-500 p-2"
+                    onClick={() => {
+                      removeSingularGroup(data.id);
+                    }}
+                  >
+                    Remove Group
+                  </button>
+                </div>
+                {idx !== requiredOptions.length - 1 && <hr className="my-3" />}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
-  }, [multipleGroup]);
+  }, [requiredOptions]);
+
+  const loadAdditionalChoices = useMemo(() => {
+    return (
+      <div className="p-4">
+        <div className="flex justify-center items-center gap-4">
+          <p className="text-2xl">Additional Choices</p>
+          <button
+            className="border border-gray-500 py-1 px-3"
+            onClick={() => addGroupItem(setAdditionalChoices, 0)}
+          >
+            +
+          </button>
+        </div>
+        <Groups
+          data={additionalChoices[0].choices}
+          removeItem={(itemIdx) =>
+            removeGroupItem(setAdditionalChoices, 0, itemIdx)
+          }
+        />
+      </div>
+    );
+  }, [additionalChoices]);
 
   return (
-    <div>
-      <p>Please fill out the fields</p>
-
-      <div>
-        <div>Name</div>
-        <input ref={nameRef} type="text" className="text-black" />
+    <div className="bg-inherit">
+      <div className="sticky top-0 bg-inherit">
+        <p className="text-xl py-5 pl-4">Create menu item</p>
+        <hr />
       </div>
-      <div>
-        <div>Description</div>
-        <input ref={descriptionRef} type="text" className="text-black" />
+      <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
+        <div className="text-2xl">Name</div>
+        <input
+          ref={nameRef}
+          type="text"
+          className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
+        />
       </div>
-      <div>
-        <div>Price</div>
-        <input ref={priceRef} type="number" className="text-black" />
+      <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
+        <div className="text-2xl">Description</div>
+        <input
+          ref={descriptionRef}
+          type="text"
+          className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
+        />
       </div>
-
-      <div>
-        <p>Singular Options</p>
-        {loadSingularGroups}
+      <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
+        <div className="text-2xl">Price</div>
+        <input
+          ref={priceRef}
+          type="number"
+          className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
+          inputMode="numeric"
+        />
       </div>
-
-      <div className="flex flex-col">
-        <p>Multiple Options</p>
-        {loadMultipleGroup}
-      </div>
-
-      <button onClick={addMenuItem}>ADD</button>
+      {loadRequiredOptions}
+      {loadAdditionalChoices}
+      <button
+        className="sticky w-full text-center py-3 bottom-0 bg-green-500"
+        onClick={addMenuItem}
+      >
+        Add to {sectionedMenu}
+      </button>
     </div>
   );
 };
