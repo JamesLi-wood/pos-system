@@ -1,32 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import SectionedMenu from "./sectionedMenu";
 import MenuItems from "./menuItems";
 import { MenuItemType } from "../../types";
 import useFetchRestaurantData from "@/app/hooks/useFetchRestaurantData";
 
 const Menu = () => {
-  const { menu, loading, refetchData } = useFetchRestaurantData();
-  const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
-
-  useEffect(() => {
-    if (!loading && menu.length > 0) setMenuItems(menu[0].data);
-  }, [menu, loading]);
-
-  const displaySectionedMenu = useMemo(() => {
-    return (
-      <SectionedMenu
-        menu={menu}
-        setMenuItems={setMenuItems}
-        refetchData={refetchData}
-      />
-    );
-  }, [menu]);
+  const { menu, refetchData } = useFetchRestaurantData();
+  const [menuItems, setMenuItems] = useState<MenuItemType[] | null>(null);
+  const [sectionedMenu, setSectionedMenu] = useState("");
 
   return (
     <div className="flex">
-      {displaySectionedMenu}
+      <SectionedMenu
+        menu={menu}
+        setMenuItems={setMenuItems}
+        setSectionedMenu={setSectionedMenu}
+        refetchData={refetchData}
+      />
 
-      <MenuItems items={menuItems} />
+      <MenuItems items={menuItems} sectionedMenu={sectionedMenu} />
     </div>
   );
 };
