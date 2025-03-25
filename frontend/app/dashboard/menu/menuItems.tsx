@@ -48,7 +48,10 @@ const MenuItems = ({
           <button
             onClick={() => {
               setSlideDownContent(
-                <MenuItemAdd sectionedMenu={sectionedMenu} />
+                <MenuItemAdd
+                  sectionedMenu={sectionedMenu}
+                  setSlideDownContent={setSlideDownContent}
+                />
               );
             }}
           >
