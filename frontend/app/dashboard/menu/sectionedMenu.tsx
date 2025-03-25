@@ -5,10 +5,12 @@ import { MenuType, MenuItemType } from "@/app/types";
 const SectionedMenu = ({
   menu,
   setMenuItems,
+  setSectionedMenu,
   refetchData,
 }: {
   menu: MenuType[];
-  setMenuItems: Dispatch<SetStateAction<MenuItemType[]>>;
+  setMenuItems: Dispatch<SetStateAction<MenuItemType[] | null>>;
+  setSectionedMenu: Dispatch<SetStateAction<string>>;
   refetchData: () => Promise<void>;
 }) => {
   const [showDelete, setShowDelete] = useState(-1);
@@ -77,17 +79,15 @@ const SectionedMenu = ({
 
   const DeleteMenu = ({ name }: { name: string }) => {
     return (
-      <div>
-        <div className="mt-40">
-          <p>{`Are you sure you want to delete ${name}?`}</p>
-          <button
-            onClick={() => {
-              deleteSectionedMenu(name);
-            }}
-          >
-            Delete
-          </button>
-        </div>
+      <div className="mt-40">
+        <p>{`Are you sure you want to delete ${name}?`}</p>
+        <button
+          onClick={() => {
+            deleteSectionedMenu(name);
+          }}
+        >
+          Delete
+        </button>
       </div>
     );
   };
@@ -100,6 +100,7 @@ const SectionedMenu = ({
             <p
               onClick={() => {
                 setMenuItems(item.data);
+                setSectionedMenu(item.name);
                 showDelete === idx ? setShowDelete(-1) : setShowDelete(idx);
               }}
             >
