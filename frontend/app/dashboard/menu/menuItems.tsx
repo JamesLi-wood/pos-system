@@ -4,7 +4,13 @@ import SlideDown from "@/app/components/slidedown";
 import MenuItemAdd from "./menuItemAdd";
 import MenuItemEdit from "./menuItemEdit";
 
-const MenuItems = ({ items }: { items: MenuItemType[] }) => {
+const MenuItems = ({
+  items,
+  sectionedMenu,
+}: {
+  items: MenuItemType[] | null;
+  sectionedMenu: string;
+}) => {
   const [showEdit, setShowEdit] = useState(-1);
   const [slideDownContent, setSlideDownContent] =
     useState<React.ReactNode | null>(null);
@@ -15,35 +21,41 @@ const MenuItems = ({ items }: { items: MenuItemType[] }) => {
 
   return (
     <div>
-      {items.map((item, idx) => {
-        return (
-          <div key={item._id} className="flex">
-            <p
-              onClick={() => {
-                showEdit === idx ? setShowEdit(-1) : setShowEdit(idx);
-              }}
-            >
-              {item.name}
-            </p>
-            {showEdit === idx && (
-              <button
-                onClick={() => {
-                  setSlideDownContent(<MenuItemEdit />);
-                }}
-              >
-                Edit
-              </button>
-            )}
-          </div>
-        );
-      })}
-      <button
-        onClick={() => {
-          setSlideDownContent(<MenuItemAdd />);
-        }}
-      >
-        Add
-      </button>
+      {items && (
+        <>
+          {items.map((item, idx) => {
+            return (
+              <div key={item._id} className="flex">
+                <p
+                  onClick={() => {
+                    showEdit === idx ? setShowEdit(-1) : setShowEdit(idx);
+                  }}
+                >
+                  {item.name}
+                </p>
+                {showEdit === idx && (
+                  <button
+                    onClick={() => {
+                      setSlideDownContent(<MenuItemEdit />);
+                    }}
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+            );
+          })}
+          <button
+            onClick={() => {
+              setSlideDownContent(
+                <MenuItemAdd sectionedMenu={sectionedMenu} />
+              );
+            }}
+          >
+            Add
+          </button>
+        </>
+      )}
 
       {slideDownContent && (
         <SlideDown
