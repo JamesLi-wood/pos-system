@@ -233,7 +233,7 @@ const Ticket = () => {
         <hr />
         <div className="flex justify-between text-xl">
           <p>Subtotal</p>
-          <p>${(price + currentPrice).toFixed(2)}</p>
+          <p>{`$${(price + currentPrice).toFixed(2)}`}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button className="bg-green-500 p-2" onClick={sendKitchen}>
