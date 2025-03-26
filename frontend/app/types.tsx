@@ -1,14 +1,14 @@
 export interface SingularOptionsType {
   title: string;
-  choices: string[];
-}
-
-export interface MultipleOptionsType {
-  title: string;
   choices: {
     name: string;
     price: number;
   }[];
+}
+
+export interface MultipleOptionsType {
+  name: string;
+  price: number;
 }
 
 export interface MenuItemType {
@@ -16,8 +16,8 @@ export interface MenuItemType {
   name: string;
   description: string;
   price: number;
-  singularOptions: SingularOptionsType[];
-  multipleOptions: MultipleOptionsType;
+  requiredOptions: SingularOptionsType[];
+  additionalOptions: MultipleOptionsType[];
 }
 
 export interface MenuType {
