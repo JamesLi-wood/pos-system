@@ -61,7 +61,13 @@ const Groups = ({
   );
 };
 
-const MenuItemAdd = ({ sectionedMenu }: { sectionedMenu: string }) => {
+const MenuItemAdd = ({
+  sectionedMenu,
+  setSlideDownContent,
+}: {
+  sectionedMenu: string;
+  setSlideDownContent: Dispatch<SetStateAction<React.ReactNode | null>>;
+}) => {
   const nameRef = useRef<HTMLInputElement | null>(null);
   const descriptionRef = useRef<HTMLInputElement | null>(null);
   const priceRef = useRef<HTMLInputElement | null>(null);
@@ -75,16 +81,16 @@ const MenuItemAdd = ({ sectionedMenu }: { sectionedMenu: string }) => {
     },
   ]);
 
-  const addMenuItem = () => {
+  const addMenuItem = async () => {
     const nameField = nameRef.current?.value;
     const descriptionField = descriptionRef.current?.value;
-    const priceField = Number(priceRef.current?.value).toFixed(2);
+    const priceField = Number(priceRef.current?.value);
     const requiredField = requiredOptions.map((option) => {
       const title = option.title?.current?.value;
       const choices = option.choices.map((choice) => {
         return {
           name: choice.name.current?.value,
-          price: Number(choice.price.current?.value).toFixed(2),
+          price: Number(choice.price.current?.value),
         };
       });
       return { title: title, choices: choices };
@@ -92,9 +98,28 @@ const MenuItemAdd = ({ sectionedMenu }: { sectionedMenu: string }) => {
     const additionalField = additionalChoices[0].choices.map((choice) => {
       return {
         name: choice.name.current?.value,
-        price: Number(choice.price.current?.value).toFixed(2),
+        price: Number(choice.price.current?.value),
       };
     });
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/menu/add/menu-item/${sectionedMenu}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: nameField,
+          description: descriptionField,
+          price: priceField,
+          requiredOptions: requiredField,
+          additionalOptions: additionalField,
+        }),
+      }
+    );
+
+    if (response.ok) setSlideDownContent(null);
   };
 
   const addSingularGroup = () => {
