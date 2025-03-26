@@ -96,6 +96,15 @@ async function deleteSectionedMenu(name) {
   }
 }
 
+async function addSectionedMenuItems(sectionedMenu, item) {
+  try {
+    const db = client.db("menu");
+    await db.collection(sectionedMenu).insertOne(item);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 module.exports = {
   connectToMongo: connectToMongo,
   validateUser: validateUser,
@@ -103,4 +112,5 @@ module.exports = {
   fetchTables: fetchTables,
   addSectionedMenu: addSectionedMenu,
   deleteSectionedMenu: deleteSectionedMenu,
+  addSectionedMenuItems: addSectionedMenuItems,
 };
