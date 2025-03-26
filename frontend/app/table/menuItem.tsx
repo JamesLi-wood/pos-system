@@ -12,14 +12,14 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
 
   const { removeSlidedownContent, setCurrentOrder, setCurrentPrice } = context;
   const { counter, increment, decrement } = useCounter();
-  const [singularOptions, setSingularOptions] = useState(
-    Array(item.singularOptions.length).fill({
+  const [requiredOptions, setRequiredOptions] = useState(
+    Array(item.requiredOptions.length).fill({
       name: null,
       selected: null,
     })
   );
-  const [multipleOptions, setMultipleOptions] = useState(
-    Array(item.multipleOptions.choices?.length).fill(null)
+  const [additionalOptions, setAdditionalOptions] = useState(
+    Array(item.additionalOptions.length).fill(null)
   );
   const [additionalPrice, setAdditionalPrice] = useState(0);
   const specialRequestRef = useRef<HTMLTextAreaElement>(null);
@@ -27,7 +27,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
   const addOrder = async () => {
     let singularIdx = -1;
 
-    const newArr = [...singularOptions];
+    const newArr = [...requiredOptions];
     newArr.map((item, idx) => {
       if (!item.name) {
         newArr[idx] = { ...newArr[idx], selected: false };
@@ -36,7 +36,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
     });
 
     if (singularIdx !== -1) {
-      setSingularOptions(newArr);
+      setRequiredOptions(newArr);
       const doc = document.getElementById(`singular${singularIdx}`);
       if (doc) doc.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
@@ -47,8 +47,8 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
       name: item.name,
       price: totalPrice,
       quantity: counter,
-      singularOptions: singularOptions.map((item) => item.name),
-      multipleOptions: multipleOptions.filter((item) => item !== null),
+      singularOptions: requiredOptions.map((item) => item.name),
+      multipleOptions: additionalOptions.filter((item) => item !== null),
       specialRequests: specialRequestRef.current
         ? specialRequestRef.current.value
         : "",
@@ -59,21 +59,21 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
     removeSlidedownContent();
   };
 
-  const singularOptionMenu = useMemo(() => {
-    if (item.singularOptions.length < 0) return;
-
-    const handleSingular = (idx: number, choice: string) => {
-      const newArr = [...singularOptions];
+  const requiredOptionMenu = useMemo(() => {
+    if (item.requiredOptions.length < 0) return;
+    
+    const handleRequiredChange = (idx: number, choice: string) => {
+      const newArr = [...requiredOptions];
       newArr[idx] = {
         name: choice,
         selected: true,
       };
-      setSingularOptions(newArr);
+      setRequiredOptions(newArr);
     };
 
     return (
       <div>
-        {item.singularOptions.map((option, idx) => {
+        {item.requiredOptions.map((option, idx) => {
           return (
             <div key={option.title} id={`singular${idx}`}>
               <div>
@@ -81,7 +81,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
                   <p className="text-2xl">{option.title}</p>
                   <p
                     className={`flex items-center rounded-3xl ${
-                      singularOptions[idx].selected === false
+                      requiredOptions[idx].selected === false
                         ? "bg-red-500 text-white"
                         : "bg-gray-200"
                     } px-2 text-base text-gray-300 bg-neutral-800`}
@@ -96,19 +96,24 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
               {option.choices.map((choice) => {
                 return (
                   <label
-                    key={choice}
+                    key={choice.name}
                     className="flex flex-row items-center cursor-pointer mt-2"
                   >
                     <input
                       type="radio"
                       className="h-8 w-6"
                       name={`singular-selection${idx}`}
-                      checked={singularOptions[idx].name === choice}
+                      checked={requiredOptions[idx].name === choice.name}
                       onChange={() => {
-                        handleSingular(idx, choice);
+                        handleRequiredChange(idx, choice.name);
                       }}
                     />
-                    <p className="ml-2">{choice}</p>
+                    <div className="ml-2 flex justify-between w-full">
+                      <p>{choice.name}</p>
+                      {choice.price !== 0 && (
+                        <p>{`+${choice.price.toFixed(2)}`}</p>
+                      )}
+                    </div>
                   </label>
                 );
               })}
@@ -118,19 +123,19 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
         })}
       </div>
     );
-  }, [singularOptions]);
+  }, [requiredOptions]);
 
-  const multipleOptionMenu = useMemo(() => {
-    if (!item.multipleOptions.choices) return;
+  const additionalOptionMenu = useMemo(() => {
+    if (item.additionalOptions.length < 0) return;
 
-    const handleMultiple = (
+    const handleAdditionalChange = (
       choice: { name: string; price: number },
       idx: number
     ) => {
       const name = choice.name;
       const price = choice.price;
 
-      const newArr = [...multipleOptions];
+      const newArr = [...additionalOptions];
 
       if (newArr[idx] === name) {
         newArr[idx] = null; // unselects.
@@ -140,14 +145,14 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
         setAdditionalPrice((prevState) => prevState + price);
       }
 
-      setMultipleOptions(newArr);
+      setAdditionalOptions(newArr);
     };
 
     return (
       <div>
-        <p className="text-2xl">{item.multipleOptions.title}</p>
+        <p className="text-2xl">Additional Choices</p>
         <div>
-          {item.multipleOptions.choices.map((choice, idx) => {
+          {item.additionalOptions.map((choice, idx) => {
             return (
               <label
                 key={choice.name}
@@ -156,14 +161,14 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
                 <input
                   type="checkbox"
                   className="h-8 w-6"
-                  checked={multipleOptions[idx] === choice.name}
+                  checked={additionalOptions[idx] === choice.name}
                   onChange={() => {
-                    handleMultiple(choice, idx);
+                    handleAdditionalChange(choice, idx);
                   }}
                 />
                 <div className="ml-2 flex justify-between w-full">
                   <p>{choice.name}</p>
-                  <p>+${choice.price}</p>
+                  <p>{`+${choice.price.toFixed(2)}`}</p>
                 </div>
               </label>
             );
@@ -172,7 +177,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
         <hr className="my-4 border-[1.5px] border-gray-500" />
       </div>
     );
-  }, [multipleOptions]);
+  }, [additionalOptions]);
 
   const specialRequestMenu = useMemo(() => {
     return (
@@ -197,8 +202,8 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
         <p className="text-base">{item.description}</p>
         <hr className="my-4 border-[1.5px] border-gray-500 sticky top-[4.2rem]" />
 
-        {singularOptionMenu}
-        {multipleOptionMenu}
+        {requiredOptionMenu}
+        {additionalOptionMenu}
         {specialRequestMenu}
       </div>
 
@@ -218,7 +223,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
           onClick={addOrder}
         >
           <p>Add {counter === 1 ? "Item" : `${counter} Items`}</p>
-          <p>${item.price * counter + additionalPrice}</p>
+          <p>{`$${(item.price * counter + additionalPrice).toFixed(2)}`}</p>
         </button>
       </div>
     </div>
