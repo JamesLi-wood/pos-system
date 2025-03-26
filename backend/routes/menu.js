@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { addSectionedMenu, deleteSectionedMenu } = require("../utils/mongo");
+const {
+  addSectionedMenu,
+  addSectionedMenuItems,
+  deleteSectionedMenu,
+} = require("../utils/mongo");
 
 router.post("/add/sectioned-menu", async (req, res) => {
   try {
@@ -12,10 +16,16 @@ router.post("/add/sectioned-menu", async (req, res) => {
   }
 });
 
-router.post("/add/menu-item/:sectionedMenu", (req, res) => {
+router.post("/add/menu-item/:sectionedMenu", async (req, res) => {
   const { sectionedMenu } = req.params;
-  // do logic
-  res.sendStatus(204);
+  const item = req.body;
+
+  try {
+    await addSectionedMenuItems(sectionedMenu, item);
+    res.sendStatus(204);
+  } catch (error) {
+    res.status(500).send({ message: "Error adding menu item" });
+  }
 });
 
 router.delete("/delete/sectioned-menu/:name", async (req, res) => {
