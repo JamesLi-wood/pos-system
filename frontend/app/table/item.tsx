@@ -17,7 +17,7 @@ const Item = ({ item }: { item: OrderType }) => {
             }`}
           />
         </div>
-        <p>{`$${item.price}`}</p>
+        <p>{`$${item.price.toFixed(2)}`}</p>
       </div>
 
       {showExtra && (
