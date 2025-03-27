@@ -15,6 +15,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
   const [requiredOptions, setRequiredOptions] = useState(
     Array(item.requiredOptions.length).fill({
       name: null,
+      price: 0,
       selected: null,
     })
   );
@@ -61,14 +62,23 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
 
   const requiredOptionMenu = useMemo(() => {
     if (item.requiredOptions.length < 0) return;
-    
-    const handleRequiredChange = (idx: number, choice: string) => {
-      const newArr = [...requiredOptions];
-      newArr[idx] = {
-        name: choice,
-        selected: true,
-      };
-      setRequiredOptions(newArr);
+
+    const handleRequiredChange = (
+      idx: number,
+      choice: { name: string; price: number }
+    ) => {
+      setAdditionalPrice(
+        (prevState) => prevState - requiredOptions[idx].price + choice.price
+      );
+      setRequiredOptions((prevState) => {
+        const newArr = [...prevState];
+        newArr[idx] = {
+          name: choice.name,
+          price: choice.price,
+          selected: true,
+        };
+        return newArr;
+      });
     };
 
     return (
@@ -105,7 +115,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
                       name={`singular-selection${idx}`}
                       checked={requiredOptions[idx].name === choice.name}
                       onChange={() => {
-                        handleRequiredChange(idx, choice.name);
+                        handleRequiredChange(idx, choice);
                       }}
                     />
                     <div className="ml-2 flex justify-between w-full">
