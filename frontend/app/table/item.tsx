@@ -22,11 +22,11 @@ const Item = ({ item }: { item: OrderType }) => {
 
       {showExtra && (
         <div className="ml-4">
-          {item.singularOptions.length > 0 && (
-            <p>{`- ${item.singularOptions.join(", ")}`}</p>
+          {item.requiredOptions.length > 0 && (
+            <p>{`- ${item.requiredOptions.join(", ")}`}</p>
           )}
-          {item.multipleOptions.length > 0 && (
-            <p>{`- ${item.multipleOptions.join(", ")}`}</p>
+          {item.additionalOptions.length > 0 && (
+            <p>{`- ${item.additionalOptions.join(", ")}`}</p>
           )}
           {item.specialRequests && <p>{`- ${item.specialRequests}`}</p>}
         </div>

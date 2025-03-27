@@ -48,8 +48,8 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
       name: item.name,
       price: totalPrice,
       quantity: counter,
-      singularOptions: requiredOptions.map((item) => item.name),
-      multipleOptions: additionalOptions.filter((item) => item !== null),
+      requiredOptions: requiredOptions.map((item) => item.name),
+      additionalOptions: additionalOptions.filter((item) => item !== null),
       specialRequests: specialRequestRef.current
         ? specialRequestRef.current.value
         : "",
