@@ -1,30 +1,19 @@
-import React, {
-  useState,
-  useRef,
-  useMemo,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import useMenuItemConfig from "@/app/hooks/useMenuItemConfig";
+import React, { useMemo, Dispatch, SetStateAction } from "react";
 import { VscChromeClose } from "react-icons/vsc";
 
-interface GroupType {
+interface MenuItemType {
   id: number;
   name: React.RefObject<HTMLInputElement | null>;
   price: React.RefObject<HTMLInputElement | null>;
-}
-
-interface SingularType {
-  id: number;
-  title: React.RefObject<HTMLInputElement | null> | null;
-  choices: GroupType[];
 }
 
 const Groups = ({
   data,
   removeItem,
 }: {
-  data: GroupType[];
-  removeItem: (itemIdx: number) => void;
+  data: MenuItemType[];
+  removeItem: (itemId: number) => void;
 }) => {
   return (
     <div className="flex flex-col items-center">
@@ -68,18 +57,19 @@ const MenuItemAdd = ({
   sectionedMenu: string;
   setSlideDownContent: Dispatch<SetStateAction<React.ReactNode | null>>;
 }) => {
-  const nameRef = useRef<HTMLInputElement | null>(null);
-  const descriptionRef = useRef<HTMLInputElement | null>(null);
-  const priceRef = useRef<HTMLInputElement | null>(null);
-  const idCounter = useRef(1);
-  const [requiredOptions, setRequiredOptions] = useState<SingularType[]>([]);
-  const [additionalChoices, setAdditionalChoices] = useState<SingularType[]>([
-    {
-      id: 0,
-      title: null,
-      choices: [],
-    },
-  ]);
+  const {
+    nameRef,
+    descriptionRef,
+    priceRef,
+    requiredOptions,
+    additionalChoices,
+    addRequiredGroup,
+    removeRequiredGroup,
+    addRequiredItem,
+    removeRequiredItem,
+    addAdditionalItem,
+    removeAdditionalItem,
+  } = useMenuItemConfig();
 
   const addMenuItem = async () => {
     const nameField = nameRef.current?.value;
@@ -95,7 +85,7 @@ const MenuItemAdd = ({
       });
       return { title: title, choices: choices };
     });
-    const additionalField = additionalChoices[0].choices.map((choice) => {
+    const additionalField = additionalChoices.map((choice) => {
       return {
         name: choice.name.current?.value,
         price: Number(choice.price.current?.value),
@@ -118,69 +108,8 @@ const MenuItemAdd = ({
         }),
       }
     );
-
+    
     if (response.ok) setSlideDownContent(null);
-  };
-
-  const addSingularGroup = () => {
-    const newId = idCounter.current++;
-    setRequiredOptions((prevState) => [
-      ...prevState,
-      {
-        id: newId,
-        title: React.createRef<HTMLInputElement>(),
-        choices: [],
-      },
-    ]);
-  };
-
-  const removeSingularGroup = (id: number) => {
-    setRequiredOptions((prevState) =>
-      prevState.filter((data) => data.id !== id)
-    );
-  };
-
-  const addGroupItem = (
-    setState: Dispatch<SetStateAction<SingularType[]>>,
-    idx: number
-  ) => {
-    const newId = idCounter.current++;
-    setState((prevState) => {
-      const newState = [...prevState];
-
-      newState[idx] = {
-        ...newState[idx],
-        choices: [
-          ...newState[idx].choices,
-          {
-            id: newId,
-            name: React.createRef<HTMLInputElement>(),
-            price: React.createRef<HTMLInputElement>(),
-          },
-        ],
-      };
-
-      return newState;
-    });
-  };
-
-  const removeGroupItem = (
-    setState: Dispatch<SetStateAction<SingularType[]>>,
-    groupIdx: number,
-    itemId: number
-  ) => {
-    setState((prevState) => {
-      const newState = [...prevState];
-
-      newState[groupIdx] = {
-        ...newState[groupIdx],
-        choices: newState[groupIdx].choices.filter(
-          (data) => data.id !== itemId
-        ),
-      };
-
-      return newState;
-    });
   };
 
   const loadRequiredOptions = useMemo(() => {
@@ -190,7 +119,7 @@ const MenuItemAdd = ({
           <p className="text-2xl">Required Options</p>
           <button
             className="border border-gray-500 py-1 px-3"
-            onClick={addSingularGroup}
+            onClick={addRequiredGroup}
           >
             +
           </button>
@@ -211,15 +140,13 @@ const MenuItemAdd = ({
 
                 <Groups
                   data={data.choices}
-                  removeItem={(itemIdx) =>
-                    removeGroupItem(setRequiredOptions, idx, itemIdx)
-                  }
+                  removeItem={(itemId) => removeRequiredItem(idx, itemId)}
                 />
                 <div className="flex justify-center gap-4 mt-2">
                   <button
                     className="bg-green-500 p-2"
                     onClick={() => {
-                      addGroupItem(setRequiredOptions, idx);
+                      addRequiredItem(idx);
                     }}
                   >
                     Add Item
@@ -227,7 +154,7 @@ const MenuItemAdd = ({
                   <button
                     className="bg-red-500 p-2"
                     onClick={() => {
-                      removeSingularGroup(data.id);
+                      removeRequiredGroup(data.id);
                     }}
                   >
                     Remove Group
@@ -249,16 +176,14 @@ const MenuItemAdd = ({
           <p className="text-2xl">Additional Choices</p>
           <button
             className="border border-gray-500 py-1 px-3"
-            onClick={() => addGroupItem(setAdditionalChoices, 0)}
+            onClick={addAdditionalItem}
           >
             +
           </button>
         </div>
         <Groups
-          data={additionalChoices[0].choices}
-          removeItem={(itemIdx) =>
-            removeGroupItem(setAdditionalChoices, 0, itemIdx)
-          }
+          data={additionalChoices}
+          removeItem={(id) => removeAdditionalItem(id)}
         />
       </div>
     );
@@ -301,7 +226,7 @@ const MenuItemAdd = ({
         className="sticky w-full text-center py-3 bottom-0 bg-green-500"
         onClick={addMenuItem}
       >
-        Add to {sectionedMenu}
+        {`Add to ${sectionedMenu}`}
       </button>
     </div>
   );
