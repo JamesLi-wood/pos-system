@@ -1,4 +1,4 @@
-export interface SingularOptionsType {
+export interface RequiredOptionsType {
   title: string;
   choices: {
     name: string;
@@ -6,7 +6,7 @@ export interface SingularOptionsType {
   }[];
 }
 
-export interface MultipleOptionsType {
+export interface AdditionalOptionsType {
   name: string;
   price: number;
 }
@@ -16,8 +16,8 @@ export interface MenuItemType {
   name: string;
   description: string;
   price: number;
-  requiredOptions: SingularOptionsType[];
-  additionalOptions: MultipleOptionsType[];
+  requiredOptions: RequiredOptionsType[];
+  additionalOptions: AdditionalOptionsType[];
 }
 
 export interface MenuType {
@@ -29,8 +29,8 @@ export interface OrderType {
   name: string;
   price: number;
   quantity: number;
-  singularOptions: string[];
-  multipleOptions: string[];
+  requiredOptions: string[];
+  additionalOptions: string[];
   specialRequests: string;
 }
 
