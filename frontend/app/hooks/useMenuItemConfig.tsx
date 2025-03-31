@@ -3,12 +3,15 @@ import React, { useRef, useState } from "react";
 interface GroupType {
   id: number;
   name: React.RefObject<HTMLInputElement | null>;
+  defaultName: string;
   price: React.RefObject<HTMLInputElement | null>;
+  defaultPrice: number;
 }
 
 interface OptionRefType {
   id: number;
   title: React.RefObject<HTMLInputElement | null> | null;
+  defaultTitle: string;
   choices: GroupType[];
 }
 
@@ -20,13 +23,14 @@ export default function useMenuItemConfig() {
   const [requiredOptions, setRequiredOptions] = useState<OptionRefType[]>([]);
   const [additionalChoices, setAdditionalChoices] = useState<GroupType[]>([]);
 
-  const addRequiredGroup = () => {
+  const addRequiredGroup = (defaultTitle: string) => {
     const newId = idCounter.current++;
     setRequiredOptions((prevState) => [
       ...prevState,
       {
         id: newId,
         title: React.createRef<HTMLInputElement>(),
+        defaultTitle: defaultTitle,
         choices: [],
       },
     ]);
@@ -38,7 +42,11 @@ export default function useMenuItemConfig() {
     );
   };
 
-  const addRequiredItem = (idx: number) => {
+  const addRequiredItem = (
+    idx: number,
+    defaultName: string,
+    defaultPrice: number
+  ) => {
     const newId = idCounter.current++;
     setRequiredOptions((prevState) => {
       const newState = [...prevState];
@@ -50,7 +58,9 @@ export default function useMenuItemConfig() {
           {
             id: newId,
             name: React.createRef<HTMLInputElement>(),
+            defaultName: defaultName,
             price: React.createRef<HTMLInputElement>(),
+            defaultPrice: defaultPrice,
           },
         ],
       };
@@ -74,7 +84,7 @@ export default function useMenuItemConfig() {
     });
   };
 
-  const addAdditionalItem = () => {
+  const addAdditionalItem = (defaultName: string, defaultPrice: number) => {
     const newId = idCounter.current++;
 
     setAdditionalChoices((prevState) => [
@@ -82,7 +92,9 @@ export default function useMenuItemConfig() {
       {
         id: newId,
         name: React.createRef<HTMLInputElement>(),
+        defaultName: defaultName,
         price: React.createRef<HTMLInputElement>(),
+        defaultPrice: defaultPrice,
       },
     ]);
   };
