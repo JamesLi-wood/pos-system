@@ -36,7 +36,7 @@ const MenuItems = ({
                 {showEdit === idx && (
                   <button
                     onClick={() => {
-                      setSlideDownContent(<MenuItemEdit />);
+                      setSlideDownContent(<MenuItemEdit item={item} />);
                     }}
                   >
                     Edit
