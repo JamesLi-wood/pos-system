@@ -1,54 +1,6 @@
 import useMenuItemConfig from "@/app/hooks/useMenuItemConfig";
 import React, { useMemo, Dispatch, SetStateAction } from "react";
-import { VscChromeClose } from "react-icons/vsc";
-
-interface MenuItemType {
-  id: number;
-  name: React.RefObject<HTMLInputElement | null>;
-  price: React.RefObject<HTMLInputElement | null>;
-}
-
-const Groups = ({
-  data,
-  removeItem,
-}: {
-  data: MenuItemType[];
-  removeItem: (itemId: number) => void;
-}) => {
-  return (
-    <div className="flex flex-col items-center">
-      {data.map((choice, idx) => {
-        return (
-          <div key={choice.id}>
-            <div className="flex flex-row gap-4 justify-center">
-              <div className="flex flex-col">
-                <input
-                  ref={choice.name}
-                  type="text"
-                  className="text-base my-2 bg-transparent border border-gray-500 p-2 outline-none"
-                  placeholder="Name"
-                />
-                <input
-                  ref={choice.price}
-                  type="number"
-                  className="text-base my-2 bg-transparent border border-gray-500 p-2 outline-none"
-                  placeholder="Price"
-                />
-              </div>
-              <button
-                className="bg-red-500 h-10 my-2 p-3"
-                onClick={() => removeItem(choice.id)}
-              >
-                <VscChromeClose />
-              </button>
-            </div>
-            {idx !== data.length - 1 && <hr className="my-3" />}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
+import InputGroups from "@/app/components/inputGroups";
 
 const MenuItemAdd = ({
   sectionedMenu,
@@ -57,25 +9,13 @@ const MenuItemAdd = ({
   sectionedMenu: string;
   setSlideDownContent: Dispatch<SetStateAction<React.ReactNode | null>>;
 }) => {
-  const {
-    nameRef,
-    descriptionRef,
-    priceRef,
-    requiredOptions,
-    additionalChoices,
-    addRequiredGroup,
-    removeRequiredGroup,
-    addRequiredItem,
-    removeRequiredItem,
-    addAdditionalItem,
-    removeAdditionalItem,
-  } = useMenuItemConfig();
+  const fieldRefs = useMenuItemConfig();
 
   const addMenuItem = async () => {
-    const nameField = nameRef.current?.value;
-    const descriptionField = descriptionRef.current?.value;
-    const priceField = Number(priceRef.current?.value);
-    const requiredField = requiredOptions.map((option) => {
+    const nameField = fieldRefs.nameRef.current?.value;
+    const descriptionField = fieldRefs.descriptionRef.current?.value;
+    const priceField = Number(fieldRefs.priceRef.current?.value);
+    const requiredField = fieldRefs.requiredOptions.map((option) => {
       const title = option.title?.current?.value;
       const choices = option.choices.map((choice) => {
         return {
@@ -85,7 +25,7 @@ const MenuItemAdd = ({
       });
       return { title: title, choices: choices };
     });
-    const additionalField = additionalChoices.map((choice) => {
+    const additionalField = fieldRefs.additionalChoices.map((choice) => {
       return {
         name: choice.name.current?.value,
         price: Number(choice.price.current?.value),
@@ -108,7 +48,7 @@ const MenuItemAdd = ({
         }),
       }
     );
-    
+
     if (response.ok) setSlideDownContent(null);
   };
 
@@ -119,14 +59,14 @@ const MenuItemAdd = ({
           <p className="text-2xl">Required Options</p>
           <button
             className="border border-gray-500 py-1 px-3"
-            onClick={addRequiredGroup}
+            onClick={() => fieldRefs.addRequiredGroup("")}
           >
             +
           </button>
         </div>
 
         <div className="flex flex-col gap-3">
-          {requiredOptions.map((data, idx) => {
+          {fieldRefs.requiredOptions.map((data, idx) => {
             return (
               <div key={data.id}>
                 <div className="flex gap-4 flex-row items-center justify-center">
@@ -137,16 +77,17 @@ const MenuItemAdd = ({
                     className="text-base my-2 bg-transparent border border-gray-500 p-2 outline-none"
                   />
                 </div>
-
-                <Groups
+                <InputGroups
                   data={data.choices}
-                  removeItem={(itemId) => removeRequiredItem(idx, itemId)}
+                  removeItem={(itemId) =>
+                    fieldRefs.removeRequiredItem(idx, itemId)
+                  }
                 />
                 <div className="flex justify-center gap-4 mt-2">
                   <button
                     className="bg-green-500 p-2"
                     onClick={() => {
-                      addRequiredItem(idx);
+                      fieldRefs.addRequiredItem(idx, "", -1);
                     }}
                   >
                     Add Item
@@ -154,20 +95,22 @@ const MenuItemAdd = ({
                   <button
                     className="bg-red-500 p-2"
                     onClick={() => {
-                      removeRequiredGroup(data.id);
+                      fieldRefs.removeRequiredGroup(data.id);
                     }}
                   >
                     Remove Group
                   </button>
                 </div>
-                {idx !== requiredOptions.length - 1 && <hr className="my-3" />}
+                {idx !== fieldRefs.requiredOptions.length - 1 && (
+                  <hr className="my-3" />
+                )}
               </div>
             );
           })}
         </div>
       </div>
     );
-  }, [requiredOptions]);
+  }, [fieldRefs.requiredOptions]);
 
   const loadAdditionalChoices = useMemo(() => {
     return (
@@ -176,18 +119,18 @@ const MenuItemAdd = ({
           <p className="text-2xl">Additional Choices</p>
           <button
             className="border border-gray-500 py-1 px-3"
-            onClick={addAdditionalItem}
+            onClick={() => fieldRefs.addAdditionalItem("", -1)}
           >
             +
           </button>
         </div>
-        <Groups
-          data={additionalChoices}
-          removeItem={(id) => removeAdditionalItem(id)}
+        <InputGroups
+          data={fieldRefs.additionalChoices}
+          removeItem={(id) => fieldRefs.removeAdditionalItem(id)}
         />
       </div>
     );
-  }, [additionalChoices]);
+  }, [fieldRefs.additionalChoices]);
 
   return (
     <div className="bg-inherit">
@@ -198,7 +141,7 @@ const MenuItemAdd = ({
       <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
         <div className="text-2xl">Name</div>
         <input
-          ref={nameRef}
+          ref={fieldRefs.nameRef}
           type="text"
           className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
         />
@@ -206,7 +149,7 @@ const MenuItemAdd = ({
       <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
         <div className="text-2xl">Description</div>
         <input
-          ref={descriptionRef}
+          ref={fieldRefs.descriptionRef}
           type="text"
           className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
         />
@@ -214,7 +157,7 @@ const MenuItemAdd = ({
       <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
         <div className="text-2xl">Price</div>
         <input
-          ref={priceRef}
+          ref={fieldRefs.priceRef}
           type="number"
           className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
           inputMode="numeric"
