@@ -36,7 +36,13 @@ const MenuItems = ({
                 {showEdit === idx && (
                   <button
                     onClick={() => {
-                      setSlideDownContent(<MenuItemEdit item={item} />);
+                      setSlideDownContent(
+                        <MenuItemEdit
+                          item={item}
+                          sectionedMenu={sectionedMenu}
+                          setSlideDownContent={setSlideDownContent}
+                        />
+                      );
                     }}
                   >
                     Edit
