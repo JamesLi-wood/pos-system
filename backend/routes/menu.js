@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const {
   addSectionedMenu,
-  addSectionedMenuItems,
+  addSectionedMenuItem,
   deleteSectionedMenu,
+  updateSectionedMenuItem,
 } = require("../utils/mongo");
 
 router.post("/add/sectioned-menu", async (req, res) => {
@@ -21,7 +22,7 @@ router.post("/add/menu-item/:sectionedMenu", async (req, res) => {
   const item = req.body;
 
   try {
-    await addSectionedMenuItems(sectionedMenu, item);
+    await addSectionedMenuItem(sectionedMenu, item);
     res.sendStatus(204);
   } catch (error) {
     res.status(500).send({ message: "Error adding menu item" });
@@ -44,11 +45,10 @@ router.delete("/delete/menu-item/:sectionedMenu", (req, res) => {
   res.sendStatus(204);
 });
 
-// edit menuItem settings
-router.patch("/update/:sectionedMenu", (req, res) => {
-  // might need 2 params instead of just the sectioned menu
-  const { sectionedMenu } = req.params;
-  // do logic
+router.patch("/update/:sectionedMenu/:id", async (req, res) => {
+  const { sectionedMenu, id } = req.params;
+  const item  = req.body;
+  await updateSectionedMenuItem(sectionedMenu, id, item);
   res.sendStatus(204);
 });
 
