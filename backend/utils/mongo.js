@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 
 const uri = process.env.MONGO_URI;
@@ -96,10 +96,21 @@ async function deleteSectionedMenu(name) {
   }
 }
 
-async function addSectionedMenuItems(sectionedMenu, item) {
+async function addSectionedMenuItem(sectionedMenu, item) {
   try {
     const db = client.db("menu");
     await db.collection(sectionedMenu).insertOne(item);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function updateSectionedMenuItem(sectionedMenu, id, item) {
+  try {
+    const db = client.db("menu");
+    const filter = { _id: ObjectId.createFromHexString(id) };
+    const update = { $set: item };
+    await db.collection(sectionedMenu).updateOne(filter, update);
   } catch (error) {
     console.log(error);
   }
@@ -112,5 +123,6 @@ module.exports = {
   fetchTables: fetchTables,
   addSectionedMenu: addSectionedMenu,
   deleteSectionedMenu: deleteSectionedMenu,
-  addSectionedMenuItems: addSectionedMenuItems,
+  addSectionedMenuItem: addSectionedMenuItem,
+  updateSectionedMenuItem: updateSectionedMenuItem,
 };
