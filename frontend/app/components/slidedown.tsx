@@ -9,7 +9,7 @@ const SlideDown = ({
   handleRemove: () => void;
 }) => {
   return (
-    <div className="absolute top-0 right-0 left-0 bottom-0">
+    <div className="z-[999] absolute top-0 right-0 left-0 bottom-0">
       <div
         id="slidedown-component"
         className="scroll-hidden pointer-events-auto absolute top-1/2 left-1/2 h-4/5 w-2/5 -translate-x-1/2 -translate-y-1/2 overflow-y-scroll rounded-2xl bg-neutral-950 max-md:w-full max-md:h-full"
