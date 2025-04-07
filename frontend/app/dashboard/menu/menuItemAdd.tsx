@@ -1,14 +1,15 @@
+import { useMemo, useContext } from "react";
 import useMenuItemConfig from "@/app/hooks/useMenuItemConfig";
-import React, { useMemo, Dispatch, SetStateAction } from "react";
 import InputGroups from "@/app/components/inputGroups";
+import { menuContext } from "./menu";
 
-const MenuItemAdd = ({
-  sectionedMenu,
-  setSlideDownContent,
-}: {
-  sectionedMenu: string;
-  setSlideDownContent: Dispatch<SetStateAction<React.ReactNode | null>>;
-}) => {
+const MenuItemAdd = () => {
+  const context = useContext(menuContext);
+  if (!context) {
+    throw new Error("tableContext must be used within a Provider");
+  }
+  const { sectionedMenu, setSlideDownContent, refetchData, setMenuItems } =
+    context;
   const fieldRefs = useMenuItemConfig();
 
   const addMenuItem = async () => {
@@ -49,7 +50,11 @@ const MenuItemAdd = ({
       }
     );
 
-    if (response.ok) setSlideDownContent(null);
+    if (response.ok) {
+      await refetchData();
+      setMenuItems(null);
+      setSlideDownContent(null);
+    }
   };
 
   const loadRequiredOptions = useMemo(() => {
