@@ -1,17 +1,16 @@
-import { useRef, useEffect, useMemo, Dispatch, SetStateAction } from "react";
-import { MenuItemType } from "@/app/types";
+import { useRef, useEffect, useContext, useMemo } from "react";
 import useMenuItemConfig from "@/app/hooks/useMenuItemConfig";
 import InputGroups from "@/app/components/inputGroups";
+import { menuContext } from "./menu";
+import { MenuItemType } from "@/app/types";
 
-const MenuItemEdit = ({
-  item,
-  sectionedMenu,
-  setSlideDownContent,
-}: {
-  item: MenuItemType;
-  sectionedMenu: string;
-  setSlideDownContent: Dispatch<SetStateAction<React.ReactNode | null>>;
-}) => {
+const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
+  const context = useContext(menuContext);
+  if (!context) {
+    throw new Error("tableContext must be used within a Provider");
+  }
+  const { sectionedMenu, setMenuItems, refetchData, setSlideDownContent } =
+    context;
   const fieldRefs = useMenuItemConfig();
   const didRun = useRef(false);
 
@@ -67,7 +66,11 @@ const MenuItemEdit = ({
       }
     );
 
-    if (response.ok) setSlideDownContent(null);
+    if (response.ok) {
+      await refetchData();
+      setMenuItems(null);
+      setSlideDownContent(null);
+    }
   };
 
   const loadRequiredOptions = useMemo(() => {
