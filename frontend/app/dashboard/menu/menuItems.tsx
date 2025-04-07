@@ -10,7 +10,31 @@ const MenuItems = ({ items }: { items: MenuItemType[] | null }) => {
   if (!context) {
     throw new Error("tableContext must be used within a Provider");
   }
-  const { slideDownContent, setSlideDownContent } = context;
+  const {
+    sectionedMenu,
+    slideDownContent,
+    refetchData,
+    setMenuItems,
+    setSlideDownContent,
+  } = context;
+
+  const deleteMenuItem = async (id: string) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/menu/delete/menu-item/${sectionedMenu}/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      await refetchData();
+      setMenuItems(null);
+      setSlideDownContent(null);
+    }
+  };
 
   return (
     <div className="overflow-y-scroll">
@@ -32,7 +56,12 @@ const MenuItems = ({ items }: { items: MenuItemType[] | null }) => {
                     >
                       Edit
                     </button>
-                    <button className="bg-red-500 p-2">Delete</button>
+                    <button
+                      className="bg-red-500 p-2"
+                      onClick={() => deleteMenuItem(item._id)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>
