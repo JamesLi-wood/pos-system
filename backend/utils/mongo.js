@@ -105,12 +105,22 @@ async function addSectionedMenuItem(sectionedMenu, item) {
   }
 }
 
+async function deleteSectionedMenuItem(sectionedMenu, id) {
+  try {
+    const db = client.db("menu");
+    const query = { _id: ObjectId.createFromHexString(id) };
+    await db.collection(sectionedMenu).deleteOne(query);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 async function updateSectionedMenuItem(sectionedMenu, id, item) {
   try {
     const db = client.db("menu");
-    const filter = { _id: ObjectId.createFromHexString(id) };
+    const query = { _id: ObjectId.createFromHexString(id) };
     const update = { $set: item };
-    await db.collection(sectionedMenu).updateOne(filter, update);
+    await db.collection(sectionedMenu).updateOne(query, update);
   } catch (error) {
     console.log(error);
   }
@@ -124,5 +134,6 @@ module.exports = {
   addSectionedMenu: addSectionedMenu,
   deleteSectionedMenu: deleteSectionedMenu,
   addSectionedMenuItem: addSectionedMenuItem,
+  deleteSectionedMenuItem: deleteSectionedMenuItem,
   updateSectionedMenuItem: updateSectionedMenuItem,
 };
