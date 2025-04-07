@@ -52,3 +52,14 @@ export interface TicketType {
   name: string | null;
   phoneNumber: string | null;
 }
+
+export interface dashboardMenuContextType {
+  sectionedMenu: string;
+  setSectionedMenu: React.Dispatch<React.SetStateAction<string>>;
+  refetchData: () => Promise<void>;
+  setMenuItems: React.Dispatch<React.SetStateAction<MenuItemType[] | null>>;
+  slideDownContent: React.ReactNode | null;
+  setSlideDownContent: React.Dispatch<
+    React.SetStateAction<React.ReactNode | null>
+  >;
+}
