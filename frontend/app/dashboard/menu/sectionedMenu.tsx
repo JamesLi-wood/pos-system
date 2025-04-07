@@ -1,21 +1,22 @@
-import { useState, Dispatch, SetStateAction, useRef } from "react";
+import { useState, useContext, useRef } from "react";
 import SlideDown from "../../components/slidedown";
-import { MenuType, MenuItemType } from "@/app/types";
+import { menuContext } from "./menu";
+import { MenuType } from "@/app/types";
 
-const SectionedMenu = ({
-  menu,
-  setMenuItems,
-  setSectionedMenu,
-  refetchData,
-}: {
-  menu: MenuType[];
-  setMenuItems: Dispatch<SetStateAction<MenuItemType[] | null>>;
-  setSectionedMenu: Dispatch<SetStateAction<string>>;
-  refetchData: () => Promise<void>;
-}) => {
+const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
+  const context = useContext(menuContext);
+  if (!context) {
+    throw new Error("tableContext must be used within a Provider");
+  }
+  const {
+    refetchData,
+    setMenuItems,
+    setSectionedMenu,
+    slideDownContent,
+    setSlideDownContent,
+  } = context;
   const [showDelete, setShowDelete] = useState(-1);
-  const [slideDownContent, setSlideDownContent] =
-    useState<React.ReactNode | null>(null);
+  const [paginate, setPaginate] = useState(0);
 
   const addSectionedMenu = async (name: string) => {
     const response = await fetch(
@@ -92,39 +93,58 @@ const SectionedMenu = ({
     );
   };
 
+  const paginateDown = () => {
+    if (paginate - 5 < 0) return;
+    setPaginate((prevState) => (prevState -= 5));
+  };
+
+  const paginateUp = () => {
+    if (paginate + 5 > menu.length - 1) return;
+    setPaginate((prevState) => (prevState += 5));
+  };
+
   return (
-    <div>
-      {menu.map((item, idx) => {
-        return (
-          <div key={item.name} className="flex">
-            <p
+    <div className="flex flex-row max-md:flex-col">
+      <button
+        className="bg-green-500 px-4 py-2"
+        onClick={() => {
+          setSlideDownContent(<AddMenu />);
+        }}
+      >
+        Add Sectioned Menu
+      </button>
+
+      <div className="flex gap-5 flex-row max-md:flex-col">
+        {menu.length > 5 && <button onClick={paginateDown}>{`<`}</button>}
+        {[...Array(5)].map((_, idx) => {
+          const item = menu[paginate + idx];
+          if (!item) return;
+
+          return (
+            <div
+              key={item.name}
+              className="flex border p-2"
               onClick={() => {
                 setMenuItems(item.data);
                 setSectionedMenu(item.name);
                 showDelete === idx ? setShowDelete(-1) : setShowDelete(idx);
               }}
             >
-              {item.name}
-            </p>
-            {showDelete === idx && (
-              <button
-                onClick={() => {
-                  setSlideDownContent(<DeleteMenu name={item.name} />);
-                }}
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        );
-      })}
-      <button
-        onClick={() => {
-          setSlideDownContent(<AddMenu />);
-        }}
-      >
-        Add
-      </button>
+              <p>{item.name}</p>
+              {showDelete === idx && (
+                <button
+                  onClick={() => {
+                    setSlideDownContent(<DeleteMenu name={item.name} />);
+                  }}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+          );
+        })}
+        {menu.length > 5 && <button onClick={paginateUp}>{`>`}</button>}
+      </div>
 
       {slideDownContent && (
         <SlideDown
