@@ -13,6 +13,11 @@ export interface AdditionalOptionsType {
 
 export interface MenuItemType {
   _id: string;
+  image: {
+    name: string;
+    data: string | null;
+    contentType: string | null;
+  };
   name: string;
   description: string;
   price: number;
