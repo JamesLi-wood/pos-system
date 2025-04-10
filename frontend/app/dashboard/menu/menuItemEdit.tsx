@@ -1,7 +1,8 @@
-import { useRef, useEffect, useContext, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useContext } from "react";
 import useMenuItemConfig from "@/app/hooks/useMenuItemConfig";
 import InputGroups from "@/app/components/inputGroups";
 import { menuContext } from "./menu";
+import { BiUpload } from "react-icons/bi";
 import { MenuItemType } from "@/app/types";
 
 const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
@@ -12,11 +13,15 @@ const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
   const { sectionedMenu, setMenuItems, refetchData, setSlideDownContent } =
     context;
   const fieldRefs = useMenuItemConfig();
+  const [imageUrl, setImageUrl] = useState<string>();
   const didRun = useRef(false);
 
   useEffect(() => {
     if (didRun.current) return; // Prevent running twice
     didRun.current = true;
+
+    if (item.image && item.image.data)
+      setImageUrl(`data:${item.image.contentType};base64,${item.image.data}`);
     item.requiredOptions.forEach((data, idx) => {
       fieldRefs.addRequiredGroup(data.title);
       data.choices.forEach((choice) =>
@@ -29,40 +34,13 @@ const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
   }, []);
 
   const applyChanges = async () => {
-    const nameField = fieldRefs.nameRef.current?.value;
-    const descriptionField = fieldRefs.descriptionRef.current?.value;
-    const priceField = Number(fieldRefs.priceRef.current?.value);
-    const requiredField = fieldRefs.requiredOptions.map((option) => {
-      const title = option.title?.current?.value;
-      const choices = option.choices.map((choice) => {
-        return {
-          name: choice.name.current?.value,
-          price: Number(choice.price.current?.value),
-        };
-      });
-      return { title: title, choices: choices };
-    });
-    const additionalField = fieldRefs.additionalChoices.map((choice) => {
-      return {
-        name: choice.name.current?.value,
-        price: Number(choice.price.current?.value),
-      };
-    });
+    const formData = fieldRefs.getFormData();
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/menu/update/${sectionedMenu}/${item._id}`,
       {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: nameField,
-          description: descriptionField,
-          price: priceField,
-          requiredOptions: requiredField,
-          additionalOptions: additionalField,
-        }),
+        body: formData,
       }
     );
 
@@ -148,12 +126,44 @@ const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
     );
   }, [fieldRefs.additionalChoices]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageURL = URL.createObjectURL(file);
+      setImageUrl(imageURL);
+    }
+  };
+
   return (
     <div className="bg-inherit">
-      <div className="sticky top-0 bg-inherit">
+      <div className="sticky top-0 bg-inherit z-10">
         <p className="text-xl py-5 pl-4">{`Update ${item.name}`}</p>
         <hr />
       </div>
+      <div className="h-[20rem] relative">
+        <input
+          ref={fieldRefs.fileRef}
+          className="hidden"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            className="object-cover h-full w-full"
+            alt="Edit Picture"
+          />
+        )}
+
+        <button
+          className="group flex absolute top-0 right-0 left-0 items-center justify-center bottom-0"
+          onClick={() => fieldRefs.fileRef.current?.click()}
+        >
+          <BiUpload className="h-14 w-14 p-2 rounded-3xl bg-black opacity-50 group-hover:opacity-100" />
+        </button>
+      </div>
+
       <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
         <div className="text-2xl">Name</div>
         <input
