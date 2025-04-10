@@ -6,3 +6,4 @@ socket.io
 dotenv-cli
 bcrypt
 jsonwebtoken
+multer
