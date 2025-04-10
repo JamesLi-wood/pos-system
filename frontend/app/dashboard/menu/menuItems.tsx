@@ -3,6 +3,7 @@ import MenuItemAdd from "./menuItemAdd";
 import MenuItemEdit from "./menuItemEdit";
 import SlideDown from "@/app/components/slidedown";
 import { menuContext } from "./menu";
+import { HiOutlineBan } from "react-icons/hi";
 import { MenuItemType } from "@/app/types";
 
 const MenuItems = ({ items }: { items: MenuItemType[] | null }) => {
@@ -41,9 +42,23 @@ const MenuItems = ({ items }: { items: MenuItemType[] | null }) => {
       {items && (
         <div className="flex flex-row flex-wrap justify-center">
           {items.map((item) => {
+            const imageUrl = item.image.data
+              ? `data:${item.image.contentType};base64,${item.image.data}`
+              : null;
+
             return (
               <div key={item._id} className="flex flex-col border w-96">
-                <div className="h-32 border">IMAGE</div>
+                <div className="h-[23rem] border">
+                  {imageUrl ? (
+                    <img
+                      className="object-cover h-full w-full"
+                      src={imageUrl}
+                      alt={item.image.name}
+                    />
+                  ) : (
+                    <HiOutlineBan className="w-full h-full" />
+                  )}
+                </div>
                 <div className="flex flex-row justify-between items-center px-4">
                   <p>{item.name}</p>
 
