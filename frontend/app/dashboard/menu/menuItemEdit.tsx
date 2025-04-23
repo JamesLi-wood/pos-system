@@ -10,8 +10,7 @@ const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
   if (!context) {
     throw new Error("tableContext must be used within a Provider");
   }
-  const { sectionedMenu, setMenuItems, refetchData, setSlideDownContent } =
-    context;
+  const { sectionedMenu, refetchData, setSlideDownContent } = context;
   const fieldRefs = useMenuItemConfig();
   const [imageUrl, setImageUrl] = useState<string>();
   const didRun = useRef(false);
@@ -20,7 +19,7 @@ const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
     if (didRun.current) return; // Prevent running twice
     didRun.current = true;
 
-    if (item.image && item.image.data)
+    if (item.image.data)
       setImageUrl(`data:${item.image.contentType};base64,${item.image.data}`);
     item.requiredOptions.forEach((data, idx) => {
       fieldRefs.addRequiredGroup(data.title);
@@ -46,7 +45,6 @@ const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
 
     if (response.ok) {
       await refetchData();
-      setMenuItems(null);
       setSlideDownContent(null);
     }
   };
@@ -163,7 +161,6 @@ const MenuItemEdit = ({ item }: { item: MenuItemType }) => {
           <BiUpload className="h-14 w-14 p-2 rounded-3xl bg-black opacity-50 group-hover:opacity-100" />
         </button>
       </div>
-
       <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
         <div className="text-2xl">Name</div>
         <input
