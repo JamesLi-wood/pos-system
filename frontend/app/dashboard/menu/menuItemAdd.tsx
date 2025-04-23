@@ -27,7 +27,6 @@ const MenuItemAdd = () => {
 
     if (response.ok) {
       await refetchData();
-      setMenuItems(null);
       setSlideDownContent(null);
     }
   };
