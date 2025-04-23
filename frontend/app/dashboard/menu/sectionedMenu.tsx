@@ -1,6 +1,6 @@
-import { useState, useContext, useRef } from "react";
-import SlideDown from "../../components/slidedown";
+import { useState, useEffect, useContext, useRef } from "react";
 import { menuContext } from "./menu";
+import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { MenuType } from "@/app/types";
 
 const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
@@ -8,15 +8,13 @@ const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
   if (!context) {
     throw new Error("tableContext must be used within a Provider");
   }
-  const {
-    refetchData,
-    setMenuItems,
-    setSectionedMenu,
-    slideDownContent,
-    setSlideDownContent,
-  } = context;
-  const [showDelete, setShowDelete] = useState(-1);
+  const { refetchData, setMenuItems, setSectionedMenu, setSlideDownContent } =
+    context;
   const [paginate, setPaginate] = useState(0);
+
+  useEffect(() => {
+    setPaginate(0);
+  }, [menu]);
 
   const addSectionedMenu = async (name: string) => {
     const response = await fetch(
@@ -32,23 +30,7 @@ const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
 
     if (response.ok) {
       await refetchData();
-      setSlideDownContent(null);
-    }
-  };
-
-  const deleteSectionedMenu = async (name: string) => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/menu/delete/sectioned-menu/${name}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (response.ok) {
-      await refetchData();
+      setSectionedMenu(name);
       setSlideDownContent(null);
     }
   };
@@ -78,21 +60,6 @@ const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
     );
   };
 
-  const DeleteMenu = ({ name }: { name: string }) => {
-    return (
-      <div className="mt-40">
-        <p>{`Are you sure you want to delete ${name}?`}</p>
-        <button
-          onClick={() => {
-            deleteSectionedMenu(name);
-          }}
-        >
-          Delete
-        </button>
-      </div>
-    );
-  };
-
   const paginateDown = () => {
     if (paginate - 5 < 0) return;
     setPaginate((prevState) => (prevState -= 5));
@@ -104,7 +71,7 @@ const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
   };
 
   return (
-    <div className="flex flex-row max-md:flex-col">
+    <div className="flex flex-row gap-8 mb-4 bg-blue-500 px-4 py-2">
       <button
         className="bg-green-500 px-4 py-2"
         onClick={() => {
@@ -114,8 +81,12 @@ const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
         Add Sectioned Menu
       </button>
 
-      <div className="flex gap-5 flex-row max-md:flex-col">
-        {menu.length > 5 && <button onClick={paginateDown}>{`<`}</button>}
+      <div className="flex gap-5 flex-row">
+        {menu.length > 5 && (
+          <button className="border px-3" onClick={paginateDown}>
+            <SlArrowLeft />
+          </button>
+        )}
         {[...Array(5)].map((_, idx) => {
           const item = menu[paginate + idx];
           if (!item) return;
@@ -127,34 +98,18 @@ const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
               onClick={() => {
                 setMenuItems(item.data);
                 setSectionedMenu(item.name);
-                showDelete === idx ? setShowDelete(-1) : setShowDelete(idx);
               }}
             >
               <p>{item.name}</p>
-              {showDelete === idx && (
-                <button
-                  onClick={() => {
-                    setSlideDownContent(<DeleteMenu name={item.name} />);
-                  }}
-                >
-                  Delete
-                </button>
-              )}
             </div>
           );
         })}
-        {menu.length > 5 && <button onClick={paginateUp}>{`>`}</button>}
+        {menu.length > 5 && (
+          <button className="border px-3" onClick={paginateUp}>
+            <SlArrowRight />
+          </button>
+        )}
       </div>
-
-      {slideDownContent && (
-        <SlideDown
-          handleRemove={() => {
-            setSlideDownContent(null);
-          }}
-        >
-          {slideDownContent}
-        </SlideDown>
-      )}
     </div>
   );
 };
