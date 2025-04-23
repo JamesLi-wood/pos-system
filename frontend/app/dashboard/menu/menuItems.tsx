@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import MenuItemAdd from "./menuItemAdd";
 import MenuItemEdit from "./menuItemEdit";
-import SlideDown from "@/app/components/slidedown";
 import { menuContext } from "./menu";
 import { HiOutlineBan } from "react-icons/hi";
 import { MenuItemType } from "@/app/types";
@@ -13,11 +12,13 @@ const MenuItems = ({ items }: { items: MenuItemType[] | null }) => {
   }
   const {
     sectionedMenu,
-    slideDownContent,
+    setSectionedMenu,
     refetchData,
     setMenuItems,
     setSlideDownContent,
   } = context;
+
+  if (!sectionedMenu) return;
 
   const deleteMenuItem = async (id: string) => {
     const response = await fetch(
@@ -32,23 +33,55 @@ const MenuItems = ({ items }: { items: MenuItemType[] | null }) => {
 
     if (response.ok) {
       await refetchData();
-      setMenuItems(null);
       setSlideDownContent(null);
+    }
+  };
+
+  const deleteSectionedMenu = async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/menu/delete/sectioned-menu/${sectionedMenu}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      await refetchData();
+      setSectionedMenu("");
+      setMenuItems(null);
     }
   };
 
   return (
     <div className="overflow-y-scroll">
+      <div className="flex ml-4 mb-4 gap-4">
+        <p className="text-4xl">{sectionedMenu}</p>
+        <button
+          className="bg-green-500 px-4 py-2"
+          onClick={() => {
+            setSlideDownContent(<MenuItemAdd />);
+          }}
+        >
+          Add Menu Item
+        </button>
+        <button className="bg-red-500 px-4 py-2" onClick={deleteSectionedMenu}>
+          Delete
+        </button>
+      </div>
+
       {items && (
-        <div className="flex flex-row flex-wrap justify-center">
+        <div className="flex flex-row flex-wrap gap-4 justify-center">
           {items.map((item) => {
             const imageUrl = item.image.data
               ? `data:${item.image.contentType};base64,${item.image.data}`
               : null;
 
             return (
-              <div key={item._id} className="flex flex-col border w-96">
-                <div className="h-[23rem] border">
+              <div key={item._id} className="flex flex-col border w-[400px]">
+                <div className="h-[300px] border">
                   {imageUrl ? (
                     <img
                       className="object-cover h-full w-full"
@@ -82,24 +115,7 @@ const MenuItems = ({ items }: { items: MenuItemType[] | null }) => {
               </div>
             );
           })}
-          <button
-            onClick={() => {
-              setSlideDownContent(<MenuItemAdd />);
-            }}
-          >
-            Add
-          </button>
         </div>
-      )}
-
-      {slideDownContent && (
-        <SlideDown
-          handleRemove={() => {
-            setSlideDownContent(null);
-          }}
-        >
-          {slideDownContent}
-        </SlideDown>
       )}
     </div>
   );
