@@ -9,8 +9,7 @@ const MenuItemAdd = () => {
   if (!context) {
     throw new Error("tableContext must be used within a Provider");
   }
-  const { sectionedMenu, setSlideDownContent, refetchData, setMenuItems } =
-    context;
+  const { sectionedMenu, setSlideDownContent, refetchData } = context;
   const fieldRefs = useMenuItemConfig();
   const [imageUrl, setImageUrl] = useState<string>();
 
