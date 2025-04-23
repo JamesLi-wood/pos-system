@@ -102,7 +102,7 @@ router.patch(
     const data = req.body;
 
     const item = {
-      image: imageDoc,
+      ...(imageDoc.data && { image: imageDoc }),
       name: data.name,
       description: data.description,
       price: Number(data.price),
