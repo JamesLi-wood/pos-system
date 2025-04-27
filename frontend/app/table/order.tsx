@@ -41,37 +41,63 @@ const Order = ({
   };
 
   const handleMenuLoad = useMemo(() => {
-    return menu.map((item, idx) => {
-      return (
-        <p
-          key={item.name}
-          className={`${
-            selectedItem === idx && "bg-gray-800"
-          } cursor-pointer text-center rounded-lg p-2 border-transparent border-2 hover:border-gray-300`}
+    console.log("RENDERED");
+    return (
+      <div className="bg-blue-950 overflow-y-scroll scroll-hidden px-4 gap-3 flex flex-col flex-none">
+        <div className="text-4xl text-center mt-14 mb-6">{tableName}</div>
+        <button className="bg-red-500 p-2" onClick={() => setInventory(false)}>
+          Return
+        </button>
+        <button
+          className="bg-green-500 p-2"
           onClick={() => {
-            setOptions(item);
-            setSelectedItem(idx);
+            setSlidedownContent(<Ticket />);
           }}
         >
-          {item.name}
-        </p>
-      );
-    });
+          View Ticket
+        </button>
+        {menu.map((item, idx) => {
+          return (
+            <p
+              key={item.name}
+              className={`${
+                selectedItem === idx && "bg-blue-400"
+              } cursor-pointer text-center rounded-lg p-2 border-transparent border-2 hover:border-white`}
+              onClick={() => {
+                setSelectedItem(idx);
+                setOptions(item);
+              }}
+            >
+              {item.name}
+            </p>
+          );
+        })}
+      </div>
+    );
   }, [selectedItem]);
 
   const handleOptionsLoad = useMemo(() => {
     return options.data.map((item) => {
+      const imageUrl = `data:${item.image.contentType};base64,${item.image.data}`;
+
       return (
         <div
           key={item._id}
-          className="border cursor-pointer h-40"
+          className="flex border rounded-3xl p-4 justify-between cursor-pointer h-[150px] w-[500px]"
           onClick={() => {
             setSlidedownContent(<MenuItem item={item} />);
           }}
         >
-          <div>IMG</div>
-          <p>{item.name}</p>
-          <p>${item.price}</p>
+          <div className="flex flex-col text-xl m-4 ">
+            <p>{item.name}</p>
+            <p>{`$${item.price}`}</p>
+          </div>
+
+          <img
+            className="h-full w-[40%] object-cover"
+            src={imageUrl}
+            alt={`${item.name} image`}
+          />
         </div>
       );
     });
@@ -80,32 +106,14 @@ const Order = ({
   return (
     <tableContext.Provider value={contextValue}>
       <div className="flex flex-col justify-between bg-black text-white h-full">
-        <div className="flex gap-4">
-          <div className="text-4xl">{tableName}</div>
-          <button
-            className="bg-red-500 p-2"
-            onClick={() => setInventory(false)}
-          >
-            Return
-          </button>
-          <button
-            className="bg-green-500 p-2"
-            onClick={() => {
-              setSlidedownContent(<Ticket />);
-            }}
-          >
-            View Ticket
-          </button>
-        </div>
+        <div className="flex flex-row h-full">
+          {handleMenuLoad}
 
-        <div className="flex flex-row h-[90%]">
-          <div className="overflow-y-scroll ml-4 mr-6 gap-2 flex flex-col flex-none">
-            {handleMenuLoad}
-          </div>
-
-          <div className="grow border border-red-500 overflow-y-scroll">
-            <p>{options.name}</p>
-            <div className="grid grid-cols-4">{handleOptionsLoad}</div>
+          <div className="overflow-y-scroll w-full">
+            <p className="text-4xl mt-14 mb-8 text-center">{options.name}</p>
+            <div className="flex flex-wrap gap-5 justify-center mx-4 pb-4">
+              {handleOptionsLoad}
+            </div>
           </div>
         </div>
 
