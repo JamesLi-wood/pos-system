@@ -50,17 +50,17 @@ const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
       return (
         <div
           key={data.orderID}
-          className="py-4 bg-[rgb(211,211,211)] text-black mb-2 w-[90%] rounded-2xl"
+          className="py-4 bg-white text-black mb-2 w-[90%] rounded-2xl"
         >
           <div className="flex flex-col items-start justify-between px-4">
             <div>
-              <p>{`Order# ${data.orderID}`}</p>
+              <p>{`Order #${data.orderID}`}</p>
               <p>{data.name}</p>
               <p>{data.phoneNumber}</p>
             </div>
-            <div className="flex w-full gap-1 justify-center">
+            <div className="flex mt-2 w-full gap-1 justify-center">
               <button
-                className="cursor-pointer rounded border-none bg-[rgb(0,139,139)] p-4 text-white"
+                className="cursor-pointer rounded border-none bg-blue-600 p-4 text-white"
                 onClick={() => {
                   setTakeoutDetails(data);
                 }}
@@ -84,9 +84,9 @@ const Takeout = ({ activateInventory }: { activateInventory: () => void }) => {
     <div>
       <p className="text-center text-2xl">Takeout</p>
       <div>
-        <div className="flex justify-center bg-[rgb(64,64,64)] py-4 mb-2">
+        <div className="flex justify-center py-4 mb-2">
           <button
-            className="cursor-pointer rounded border-none bg-[rgb(44,117,255)] p-4 text-white"
+            className="cursor-pointer rounded border-none bg-blue-600 p-4 text-white"
             onClick={activateInventory}
           >
             Create Order
