@@ -71,14 +71,14 @@ const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
   };
 
   return (
-    <div className="flex flex-row gap-8 mb-4 bg-blue-500 px-4 py-2">
+    <div className="overflow-x-scroll scroll-hidden absolute left-0 top-0 right-0 flex items-center gap-6 bg-blue-500 px-4 py-3">
       <button
-        className="bg-green-500 px-4 py-2"
+        className="bg-green-500 px-4 py-2 "
         onClick={() => {
           setSlideDownContent(<AddMenu />);
         }}
       >
-        Add Sectioned Menu
+        Add
       </button>
 
       <div className="flex gap-5 flex-row">
@@ -94,7 +94,7 @@ const SectionedMenu = ({ menu }: { menu: MenuType[] }) => {
           return (
             <div
               key={item.name}
-              className="flex border p-2"
+              className="flex border p-2 cursor-pointer"
               onClick={() => {
                 setMenuItems(item.data);
                 setSectionedMenu(item.name);
