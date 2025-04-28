@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, createContext, useMemo } from "react";
 import SlideDown from "../components/slidedown";
+import Sidebar from "../components/sidebar";
 import Ticket from "./ticket";
 import MenuItem from "./menuItem";
 import { MenuType, OrderType, TableContextType } from "../types";
@@ -41,9 +42,8 @@ const Order = ({
   };
 
   const handleMenuLoad = useMemo(() => {
-    console.log("RENDERED");
     return (
-      <div className="bg-blue-950 overflow-y-scroll scroll-hidden px-4 gap-3 flex flex-col flex-none">
+      <div className="w-40 bg-blue-950 overflow-y-scroll scroll-hidden px-4 gap-3 flex flex-col flex-none">
         <div className="text-4xl text-center mt-14 mb-6">{tableName}</div>
         <button className="bg-red-500 p-2" onClick={() => setInventory(false)}>
           Return
@@ -61,7 +61,7 @@ const Order = ({
             <p
               key={item.name}
               className={`${
-                selectedItem === idx && "bg-blue-400"
+                selectedItem === idx && "bg-blue-600"
               } cursor-pointer text-center rounded-lg p-2 border-transparent border-2 hover:border-white`}
               onClick={() => {
                 setSelectedItem(idx);
@@ -83,7 +83,7 @@ const Order = ({
       return (
         <div
           key={item._id}
-          className="flex border rounded-3xl p-4 justify-between cursor-pointer h-[150px] w-[500px]"
+          className="flex border rounded-3xl p-4 justify-between cursor-pointer h-[200px] w-[500px]"
           onClick={() => {
             setSlidedownContent(<MenuItem item={item} />);
           }}
@@ -107,7 +107,7 @@ const Order = ({
     <tableContext.Provider value={contextValue}>
       <div className="flex flex-col justify-between bg-black text-white h-full">
         <div className="flex flex-row h-full">
-          {handleMenuLoad}
+          <Sidebar>{handleMenuLoad}</Sidebar>
 
           <div className="overflow-y-scroll w-full">
             <p className="text-4xl mt-14 mb-8 text-center">{options.name}</p>
