@@ -1,9 +1,10 @@
 "use client";
-import Link from "next/link";
-import useValidateToken from "../hooks/useValidateToken";
 import { useState } from "react";
+import useValidateToken from "../hooks/useValidateToken";
+import Sidebar from "../components/sidebar";
 import Menu from "./menu/menu";
 import Employees from "./employees";
+import Link from "next/link";
 
 const Dashboard = () => {
   useValidateToken();
@@ -11,11 +12,11 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-full bg-black text-white">
-      <div className="border-8 border-y-0 border-l-0 border-t-none border-r-gray-500 justify-between flex flex-col h-full py-10 px-7">
-        <div className="scroll-hidden flex flex-col gap-2 overflow-y-scroll">
-          <p className="border border-black text-2xl mb-4">Restaurant Name</p>
+      <Sidebar>
+        <div className="flex flex-col gap-5 mx-5 my-10 w-max">
+          <p className="text-2xl">Restaurant Name</p>
           <button
-            className="bg-gray-500 hover:bg-gray-800 py-3 rounded-lg"
+            className="rounded-lg bg-blue-500 py-2 hover:bg-blue-700"
             onClick={() => {
               setDashboardContent(<Menu />);
             }}
@@ -23,20 +24,20 @@ const Dashboard = () => {
             Menu
           </button>
           <button
-            className="bg-gray-500 hover:bg-gray-800 py-3 rounded-lg"
+            className="rounded-lg bg-blue-500 py-2 hover:bg-blue-700"
             onClick={() => {
               setDashboardContent(<Employees />);
             }}
           >
             Employees
           </button>
-          <button></button>
-        </div>
 
-        <Link className="bg-red-500" href={"/"}>
-          BACK
-        </Link>
-      </div>
+          <Link className="bg-red-500 text-center py-2" href={"/"}>
+            BACK
+          </Link>
+        </div>
+      </Sidebar>
+
       {dashboardContent}
     </div>
   );
