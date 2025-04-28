@@ -32,7 +32,7 @@ const Menu = () => {
   }, [menu]);
 
   return (
-    <div className="flex flex-col border w-full">
+    <div className="relative flex flex-col w-full">
       <menuContext.Provider value={contextValue}>
         <SectionedMenu menu={menu} />
         <MenuItems items={menuItems} />
