@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Takeout from "./takeout";
 import Order from "./order";
+import Sidebar from "../components/sidebar";
 import { MenuType } from "../types";
 
 const Table = ({
@@ -25,6 +26,25 @@ const Table = ({
   const RenderTables = () => {
     return (
       <div className="flex justify-between h-full bg-black text-white">
+        <Sidebar>
+          <div className="w-60 bg-blue-950 overflow-y-scroll scroll-hidden">
+            <div className="flex w-full justify-center my-4">
+              <Link
+                className="w-[90%] rounded-xl bg-red-500 py-2 text-center"
+                href={"/"}
+              >
+                BACK
+              </Link>
+            </div>
+
+            <Takeout
+              activateInventory={() => {
+                activateInventory("takeout");
+              }}
+            />
+          </div>
+        </Sidebar>
+
         {loading ? (
           <div>LOADING</div>
         ) : (
@@ -45,23 +65,6 @@ const Table = ({
             })}
           </div>
         )}
-
-        <div className="w-60 border-l-4 border-[rgb(61,61,61)] overflow-y-scroll scroll-hidden">
-          <div className="flex w-full justify-center my-4">
-            <Link
-              className="w-[90%] rounded-xl bg-red-500 py-2 text-center"
-              href={"/"}
-            >
-              BACK
-            </Link>
-          </div>
-
-          <Takeout
-            activateInventory={() => {
-              activateInventory("takeout");
-            }}
-          />
-        </div>
       </div>
     );
   };
