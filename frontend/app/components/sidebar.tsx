@@ -1,18 +1,19 @@
 import { useState } from "react";
 
 const Sidebar = ({ children }: { children: React.ReactNode }) => {
-  const [button, setButton] = useState(false);
+  const [slide, setSlide] = useState(false);
 
   return (
     <div
       className={`${
-        button ? "-translate-x-full" : "translate-x-0"
+        slide ? "translate-x-0" : "-translate-x-full"
       } transition-transform lg:translate-x-0 max-lg:absolute h-full flex flex-col bg-blue-950 z-10`}
     >
-      {children}
+      <div className="overflow-y-scroll scroll-hidden z-10">{children}</div>
+
       <button
-        className="lg:hidden absolute top-1/2 -right-6 -translate-y-1/2 rounded-3xl bg-blue-500 p-6"
-        onClick={() => setButton((prevState) => !prevState)}
+        className="-translate-y-1/2 lg:hidden absolute top-1/2 -right-6 rounded-3xl bg-blue-950 p-6"
+        onClick={() => setSlide((prevState) => !prevState)}
       ></button>
     </div>
   );
