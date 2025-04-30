@@ -27,8 +27,8 @@ const Table = ({
     return (
       <div className="flex justify-between h-full bg-black text-white">
         <Sidebar>
-          <div className="w-60 bg-blue-950 overflow-y-scroll scroll-hidden">
-            <div className="flex w-full justify-center my-4">
+          <div className="w-60">
+            <div className="flex justify-center my-4">
               <Link
                 className="w-[90%] rounded-xl bg-red-500 py-2 text-center"
                 href={"/"}
