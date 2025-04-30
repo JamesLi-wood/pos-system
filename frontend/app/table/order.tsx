@@ -43,7 +43,7 @@ const Order = ({
 
   const handleMenuLoad = useMemo(() => {
     return (
-      <div className="w-40 bg-blue-950 overflow-y-scroll scroll-hidden px-4 gap-3 flex flex-col flex-none">
+      <div className="w-40 px-4 gap-3 flex flex-col">
         <div className="text-4xl text-center mt-14 mb-6">{tableName}</div>
         <button className="bg-red-500 p-2" onClick={() => setInventory(false)}>
           Return
@@ -106,11 +106,11 @@ const Order = ({
   return (
     <tableContext.Provider value={contextValue}>
       <div className="flex flex-col justify-between bg-black text-white h-full">
-        <div className="flex flex-row h-full">
+        <div className="flex flex-row h-full items-center">
           <Sidebar>{handleMenuLoad}</Sidebar>
 
-          <div className="overflow-y-scroll w-full">
-            <p className="text-4xl mt-14 mb-8 text-center">{options.name}</p>
+          <div className="overflow-y-scroll w-full h-[90%]">
+            <p className="text-4xl mb-8 text-center">{options.name}</p>
             <div className="flex flex-wrap gap-5 justify-center mx-4 pb-4">
               {handleOptionsLoad}
             </div>
