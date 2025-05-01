@@ -6,12 +6,15 @@ import Link from "next/link";
 import Takeout from "./takeout";
 import Order from "./order";
 import Sidebar from "../components/sidebar";
+import SlideDown from "../components/slidedown";
 
 const Table = () => {
   useValidateToken();
   const { menu, tables, loading } = useFetchRestaurantData();
   const [inventory, setInventory] = useState(false);
   const [tableName, setTableName] = useState("");
+  const [slidedownContent, setSlidedownContent] =
+    useState<React.ReactNode | null>(null);
 
   const activateInventory = async (table: string) => {
     setInventory(true);
@@ -36,6 +39,7 @@ const Table = () => {
               activateInventory={() => {
                 activateInventory("takeout");
               }}
+              setSlidedownContent={setSlidedownContent}
             />
           </div>
         </Sidebar>
@@ -67,7 +71,15 @@ const Table = () => {
   return (
     <>
       {!inventory ? (
-        <RenderTables />
+        <>
+          <RenderTables />
+
+          {slidedownContent && (
+            <SlideDown handleRemove={() => setSlidedownContent(null)}>
+              {slidedownContent}
+            </SlideDown>
+          )}
+        </>
       ) : (
         <Order menu={menu} tableName={tableName} setInventory={setInventory} />
       )}
