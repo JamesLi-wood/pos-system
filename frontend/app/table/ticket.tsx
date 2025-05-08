@@ -22,7 +22,6 @@ const Ticket = () => {
   const [tickets, setTickets] = useState<TicketType[]>([]);
   const [price, setPrice] = useState(0);
   const [showDelete, setShowDelete] = useState(false);
-  const [hasScrollbar, setHasScrollbar] = useState(false);
   const nameRef = useRef<HTMLInputElement | null>(null);
   const phoneRef = useRef<HTMLInputElement | null>(null);
   const socket = useSocket();
@@ -134,102 +133,87 @@ const Ticket = () => {
     }
   };
 
-  useEffect(() => {
-    const checkScrollbar = () => {
-      const parent = document.getElementById("slidedown-component");
-      if (parent) {
-        setHasScrollbar(parent.scrollHeight > parent.clientHeight);
-      }
-    };
-
-    setTimeout(checkScrollbar, 10);
-    window.addEventListener("resize", checkScrollbar);
-    return () => {
-      window.removeEventListener("resize", checkScrollbar);
-    };
-  }, []);
-
   return (
-    <div className="bg-inherit">
-      <div className="sticky top-0 bg-inherit z-10 px-4">
-        <p className="py-4 text-2xl">{tableName}</p>
-        {tableName === "takeout" && (
-          <div className="flex flex-col mb-4 gap-2">
-            <div className="flex gap-2">
-              <p>NAME</p>
-              <input
-                className="text-base bg-transparent border border-gray-500 resize-none text-white w-full outline-none"
-                type="text"
-                ref={nameRef}
-              />
+    <div className="bg-inherit h-full flex flex-col justify-between">
+      <div className="bg-inherit">
+        <div className="sticky top-0 bg-inherit z-10 px-4">
+          <p className="py-4 text-2xl">{tableName}</p>
+          {tableName === "takeout" && (
+            <div className="flex flex-col mb-4 gap-2">
+              <div className="flex gap-2">
+                <p>NAME</p>
+                <input
+                  className="text-base bg-transparent border border-gray-500 resize-none text-white w-full outline-none"
+                  type="text"
+                  ref={nameRef}
+                />
+              </div>
+              <div className="flex gap-2">
+                <p>NUMBER</p>
+                <input
+                  className="text-base bg-transparent border border-gray-500 resize-none text-white w-full outline-none"
+                  type="tel"
+                  inputMode="numeric"
+                  ref={phoneRef}
+                />
+              </div>
             </div>
-            <div className="flex gap-2">
-              <p>NUMBER</p>
-              <input
-                className="text-base bg-transparent border border-gray-500 resize-none text-white w-full outline-none"
-                type="tel"
-                inputMode="numeric"
-                ref={phoneRef}
-              />
-            </div>
-          </div>
-        )}
+          )}
 
-        <hr className="mb-2" />
-      </div>
-      <div className={`flex flex-col px-4 ${!hasScrollbar && "pb-20"}`}>
-        {tickets.length !== 0 && <p className="text-center">Previous orders</p>}
-        {tickets.map((orders, ticketIdx) => {
-          return (
-            <div key={orders.orderID}>
-              {orders.ticket.map((item: any, itemIdx: number) => {
+          <hr className="mb-2" />
+        </div>
+        <div className="flex flex-col px-4">
+          {tickets.length !== 0 && (
+            <p className="text-center">Previous orders</p>
+          )}
+          {tickets.map((orders, ticketIdx) => {
+            return (
+              <div key={orders.orderID}>
+                {orders.ticket.map((item: any, itemIdx: number) => {
+                  return (
+                    <div key={itemIdx} className="flex">
+                      {showDelete && (
+                        <button
+                          className="w-7 flex items-center justify-center p-1 cursor-pointer border-none bg-[rgb(255,0,0)] text-white"
+                          onClick={() => removeItem(ticketIdx, itemIdx)}
+                        >
+                          <VscChromeClose />
+                        </button>
+                      )}
+                      <Item item={item} />
+                    </div>
+                  );
+                })}
+                {ticketIdx !== tickets.length - 1 && <hr className="my-2" />}
+              </div>
+            );
+          })}
+
+          {currentOrder.length !== 0 && (
+            <>
+              {tickets.length !== 0 && <hr />}
+              <p className="text-center">Current order</p>
+              {currentOrder.map((order, idx) => {
                 return (
-                  <div key={itemIdx} className="flex">
+                  <div key={idx} className="flex">
                     {showDelete && (
                       <button
                         className="w-7 flex items-center justify-center p-1 cursor-pointer border-none bg-[rgb(255,0,0)] text-white"
-                        onClick={() => removeItem(ticketIdx, itemIdx)}
+                        onClick={() => removeCurrentItem(idx)}
                       >
                         <VscChromeClose />
                       </button>
                     )}
-                    <Item item={item} />
+                    <Item item={order} />
                   </div>
                 );
               })}
-              {ticketIdx !== tickets.length - 1 && <hr className="my-2" />}
-            </div>
-          );
-        })}
-
-        {currentOrder.length !== 0 && (
-          <>
-            {tickets.length !== 0 && <hr />}
-            <p className="text-center">Current order</p>
-            {currentOrder.map((order, idx) => {
-              return (
-                <div key={idx} className="flex">
-                  {showDelete && (
-                    <button
-                      className="w-7 flex items-center justify-center p-1 cursor-pointer border-none bg-[rgb(255,0,0)] text-white"
-                      onClick={() => removeCurrentItem(idx)}
-                    >
-                      <VscChromeClose />
-                    </button>
-                  )}
-                  <Item item={order} />
-                </div>
-              );
-            })}
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
-      <div
-        className={`${
-          hasScrollbar ? "sticky" : "absolute"
-        } bottom-0 bg-inherit left-0 right-0 px-4`}
-      >
+      <div className="sticky bottom-0 bg-inherit left-0 right-0 p-4">
         <hr />
         <div className="flex justify-between text-xl">
           <p>Subtotal</p>
