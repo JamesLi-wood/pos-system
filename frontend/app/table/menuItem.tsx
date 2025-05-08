@@ -206,26 +206,28 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
   }, []);
 
   return (
-    <div className="bg-inherit">
-      <img
-        className="h-96 w-full object-fill"
-        src={imageUrl}
-        alt={`${item.image.name} image`}
-      />
+    <div className="bg-inherit h-full flex flex-col justify-between">
+      <div className="bg-inherit">
+        <img
+          className="h-96 w-full object-fill"
+          src={imageUrl}
+          alt={`${item.image.name} image`}
+        />
 
-      <div className="px-4 bg-inherit text-xl">
-        <p className="sticky top-0 bg-inherit text-3xl py-4 mt-1">
-          {item.name}
-        </p>
-        <p className="text-base">{item.description}</p>
-        <hr className="my-4 border-[1.5px] border-gray-500 sticky top-[4.2rem]" />
+        <div className="px-4 bg-inherit text-xl">
+          <p className="sticky top-0 bg-inherit text-3xl py-4 mt-1">
+            {item.name}
+          </p>
+          <p className="text-base">{item.description}</p>
+          <hr className="my-4 border-[1.5px] border-gray-500 sticky top-[4.2rem]" />
 
-        {requiredOptionMenu}
-        {additionalOptionMenu}
-        {specialRequestMenu}
+          {requiredOptionMenu}
+          {additionalOptionMenu}
+          {specialRequestMenu}
+        </div>
       </div>
 
-      <div className="p-4 sticky gap-4 flex -bottom-1 left-0 right-0 bg-inherit">
+      <div className="p-4 sticky gap-4 flex bottom-0 left-0 right-0 bg-inherit">
         <hr className="my-4 border-[1.5px] border-gray-500 absolute top-0 right-0 left-0 mt-1" />
         <div className="flex py-2 items-center border border-gray-200 rounded-lg">
           <button className="cursor-pointer px-4 py-2" onClick={decrement}>
