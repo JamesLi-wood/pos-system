@@ -23,7 +23,7 @@ const SlideDown = ({
           </button>
         </div>
 
-        <div className="bg-inherit -mt-10">{children}</div>
+        <div className="bg-inherit -mt-10 h-full">{children}</div>
       </div>
     </div>
   );
