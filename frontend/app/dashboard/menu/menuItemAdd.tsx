@@ -119,61 +119,64 @@ const MenuItemAdd = () => {
   };
 
   return (
-    <div className="bg-inherit">
-      <div className="sticky top-0 bg-inherit z-10">
-        <p className="text-xl py-5 pl-4">Create menu item</p>
-        <hr />
-      </div>
-      <div className="h-[20rem] relative">
-        <input
-          ref={fieldRefs.fileRef}
-          className="hidden"
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-        />
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            className="object-cover h-full w-full"
-            alt="Edit Picture"
+    <div className="bg-inherit h-full flex flex-col justify-between">
+      <div className="bg-inherit">
+        <div className="sticky top-0 bg-inherit z-10">
+          <p className="text-xl py-5 pl-4">Create menu item</p>
+          <hr />
+        </div>
+        <div className="h-[20rem] relative">
+          <input
+            ref={fieldRefs.fileRef}
+            className="hidden"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
           />
-        )}
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              className="object-cover h-full w-full"
+              alt="Edit Picture"
+            />
+          )}
 
-        <button
-          className="group flex absolute top-0 right-0 left-0 items-center justify-center bottom-0"
-          onClick={() => fieldRefs.fileRef.current?.click()}
-        >
-          <BiUpload className="h-14 w-14 p-2 rounded-3xl bg-black opacity-50 group-hover:opacity-100" />
-        </button>
+          <button
+            className="group flex absolute top-0 right-0 left-0 items-center justify-center bottom-0"
+            onClick={() => fieldRefs.fileRef.current?.click()}
+          >
+            <BiUpload className="h-14 w-14 p-2 rounded-3xl bg-black opacity-50 group-hover:opacity-100" />
+          </button>
+        </div>
+        <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
+          <div className="text-2xl">Name</div>
+          <input
+            ref={fieldRefs.nameRef}
+            type="text"
+            className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
+          />
+        </div>
+        <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
+          <div className="text-2xl">Description</div>
+          <input
+            ref={fieldRefs.descriptionRef}
+            type="text"
+            className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
+          />
+        </div>
+        <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
+          <div className="text-2xl">Price</div>
+          <input
+            ref={fieldRefs.priceRef}
+            type="number"
+            className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
+            inputMode="numeric"
+          />
+        </div>
+        {loadRequiredOptions}
+        {loadAdditionalChoices}
       </div>
-      <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
-        <div className="text-2xl">Name</div>
-        <input
-          ref={fieldRefs.nameRef}
-          type="text"
-          className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
-        />
-      </div>
-      <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
-        <div className="text-2xl">Description</div>
-        <input
-          ref={fieldRefs.descriptionRef}
-          type="text"
-          className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
-        />
-      </div>
-      <div className="flex flex-col items-center p-4 border border-x-0 border-t-0 border-white">
-        <div className="text-2xl">Price</div>
-        <input
-          ref={fieldRefs.priceRef}
-          type="number"
-          className="text-base my-2 bg-transparent border border-gray-500 p-2 resize-none text-white w-full outline-none"
-          inputMode="numeric"
-        />
-      </div>
-      {loadRequiredOptions}
-      {loadAdditionalChoices}
+
       <button
         className="sticky w-full text-center py-3 bottom-0 bg-green-500"
         onClick={addMenuItem}
