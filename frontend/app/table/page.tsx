@@ -5,45 +5,28 @@ import useFetchRestaurantData from "../hooks/useFetchRestaurantData";
 import Link from "next/link";
 import Takeout from "./takeout";
 import Order from "./order";
-import Sidebar from "../components/sidebar";
-import SlideDown from "../components/slidedown";
 
 const Table = () => {
   useValidateToken();
   const { menu, tables, loading } = useFetchRestaurantData();
-  const [inventory, setInventory] = useState(false);
   const [tableName, setTableName] = useState("");
-  const [slidedownContent, setSlidedownContent] =
-    useState<React.ReactNode | null>(null);
+  const [renderContent, setRenderContent] = useState("tables");
+  const [mode, setMode] = useState("");
 
-  const activateInventory = async (table: string) => {
-    setInventory(true);
+  const exitOrder = () => {
+    setRenderContent("tables");
+    setMode("");
+  };
+
+  const takeOrder = (table: string) => {
+    setMode("order");
+    setRenderContent("");
     setTableName(table);
   };
 
   const RenderTables = () => {
     return (
       <div className="flex justify-between h-full bg-black text-white">
-        <Sidebar>
-          <div className="w-60">
-            <div className="flex justify-center my-4">
-              <Link
-                className="w-[90%] rounded-xl bg-red-500 py-2 text-center"
-                href={"/"}
-              >
-                BACK
-              </Link>
-            </div>
-
-            <Takeout
-              activateInventory={() => {
-                activateInventory("takeout");
-              }}
-              setSlidedownContent={setSlidedownContent}
-            />
-          </div>
-        </Sidebar>
-
         {loading ? (
           <div>LOADING</div>
         ) : (
@@ -54,9 +37,7 @@ const Table = () => {
                   id={table}
                   key={table}
                   className="h-[100px] w-[90%] rounded-xl border border-[rgb(211, 211, 211)] cursor-pointer justify-center items-center flex"
-                  onClick={() => {
-                    activateInventory(table);
-                  }}
+                  onClick={() => takeOrder(table)}
                 >
                   {`Table ${table}`}
                 </div>
@@ -68,20 +49,62 @@ const Table = () => {
     );
   };
 
+  const RenderOrderHistory = () => {
+    return <div>Order history</div>;
+  };
+
+  const Header = () => {
+    return (
+      <div className="flex">
+        <div
+          onClick={() => {
+            setRenderContent("tables");
+          }}
+        >
+          Tables
+        </div>
+        <div
+          onClick={() => {
+            setRenderContent("takeoutOrders");
+          }}
+        >
+          Takeout
+        </div>
+        <div
+          onClick={() => {
+            setRenderContent("orderHistory");
+          }}
+        >
+          Orders
+        </div>
+        <div>
+          <Link
+            className="w-[90%] rounded-xl bg-red-500 py-2 text-center"
+            href={"/"}
+          >
+            BACK
+          </Link>
+        </div>
+      </div>
+    );
+  };
   return (
     <>
-      {!inventory ? (
+      {renderContent ? (
         <>
-          <RenderTables />
-
-          {slidedownContent && (
-            <SlideDown handleRemove={() => setSlidedownContent(null)}>
-              {slidedownContent}
-            </SlideDown>
+          <Header />
+          {renderContent == "tables" && <RenderTables />}
+          {renderContent == "takeoutOrders" && (
+            <Takeout takeOrder={() => takeOrder("takeout")} />
           )}
+          {renderContent == "orderHistory" && <RenderOrderHistory />}
         </>
       ) : (
-        <Order menu={menu} tableName={tableName} setInventory={setInventory} />
+        <>
+          {mode == "order" && (
+            <Order menu={menu} tableName={tableName} exitOrder={exitOrder} />
+          )}
+        </>
       )}
     </>
   );
