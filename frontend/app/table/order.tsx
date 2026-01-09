@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, createContext, useMemo } from "react";
-import SlideDown from "../components/slidedown";
+import { useState, createContext, useMemo } from "react";
 import Sidebar from "../components/sidebar";
 import Ticket from "./ticket";
 import MenuItem from "./menuItem";
-import { MenuType, OrderType, TableContextType } from "../types";
+import { MenuItemType, MenuType, OrderType, TableContextType } from "../types";
+import Modal from "../components/modal";
 
 export const tableContext = createContext<TableContextType | undefined>(
   undefined
@@ -13,28 +13,28 @@ export const tableContext = createContext<TableContextType | undefined>(
 const Order = ({
   menu,
   tableName,
-  setInventory,
+  exitOrder,
 }: {
   menu: MenuType[];
   tableName: string;
-  setInventory: Function;
+  exitOrder: Function;
 }) => {
   const [options, setOptions] = useState<MenuType>(menu[0]);
-  const [slidedownContent, setSlidedownContent] =
-    useState<React.ReactNode | null>(null);
   const [selectedItem, setSelectedItem] = useState(0);
   const [currentOrder, setCurrentOrder] = useState<OrderType[]>([]);
-  const [currentPrice, setCurrentPrice] = useState(0);
+  const [currentPrice, setCurrentPrice] = useState(0)
+  const [modalContent, setModalContent] = useState("");
+  const [menuItem, setMenuItem] = useState<MenuItemType | undefined>(undefined);
 
-  const removeSlidedownContent = () => {
-    setSlidedownContent(null);
+  const removeModal = () => {
+    setModalContent("");
   };
 
   const contextValue = {
     menu,
     tableName,
-    setInventory,
-    removeSlidedownContent,
+    removeModal,
+    exitOrder,
     currentOrder,
     setCurrentOrder,
     currentPrice,
@@ -45,13 +45,13 @@ const Order = ({
     return (
       <div className="w-40 px-4 gap-3 flex flex-col">
         <div className="text-4xl text-center mt-14 mb-6">{tableName}</div>
-        <button className="bg-red-500 p-2" onClick={() => setInventory(false)}>
+        <button className="bg-red-500 p-2" onClick={() => exitOrder()}>
           Return
         </button>
         <button
           className="bg-green-500 p-2"
           onClick={() => {
-            setSlidedownContent(<Ticket />);
+            setModalContent("ticket");
           }}
         >
           View Ticket
@@ -85,7 +85,8 @@ const Order = ({
           key={item._id}
           className="flex border rounded-3xl p-4 justify-between cursor-pointer h-[200px] w-[500px]"
           onClick={() => {
-            setSlidedownContent(<MenuItem item={item} />);
+            setModalContent("menuItem");
+            setMenuItem(item);
           }}
         >
           <div className="flex flex-col text-xl m-4 ">
@@ -117,10 +118,13 @@ const Order = ({
           </div>
         </div>
 
-        {slidedownContent && (
-          <SlideDown handleRemove={removeSlidedownContent}>
-            {slidedownContent}
-          </SlideDown>
+        {modalContent && (
+          <Modal removeModal={removeModal}>
+            {modalContent == "ticket" && <Ticket />}
+            {menuItem && modalContent == "menuItem" && (
+              <MenuItem item={menuItem} />
+            )}
+          </Modal>
         )}
       </div>
     </tableContext.Provider>
