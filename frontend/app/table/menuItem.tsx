@@ -10,7 +10,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
     throw new Error("tableContext must be used within a Provider");
   }
 
-  const { removeSlidedownContent, setCurrentOrder, setCurrentPrice } = context;
+  const { removeModal, setCurrentOrder, setCurrentPrice } = context;
   const { counter, increment, decrement } = useCounter();
   const [requiredOptions, setRequiredOptions] = useState(
     Array(item.requiredOptions.length).fill({
@@ -58,7 +58,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
 
     setCurrentPrice((prevState) => (prevState += totalPrice));
     setCurrentOrder((prevState) => [...prevState, order]);
-    removeSlidedownContent();
+    removeModal();
   };
 
   const requiredOptionMenu = useMemo(() => {

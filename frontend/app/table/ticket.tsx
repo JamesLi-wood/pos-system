@@ -17,7 +17,7 @@ const Ticket = () => {
     setCurrentOrder,
     currentPrice,
     setCurrentPrice,
-    setInventory,
+    exitOrder,
   } = context;
   const [tickets, setTickets] = useState<TicketType[]>([]);
   const [price, setPrice] = useState(0);
@@ -104,7 +104,7 @@ const Ticket = () => {
     if (response.ok) {
       if (isTakeout) {
         if (socket) socket.emit("request-takeout-ticket");
-        setInventory(false);
+        exitOrder();
       } else {
         fetchTickets();
         setCurrentOrder([]);
