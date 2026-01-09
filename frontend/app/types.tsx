@@ -42,8 +42,8 @@ export interface OrderType {
 export interface TableContextType {
   menu: MenuType[];
   tableName: string;
-  setInventory: Function;
-  removeSlidedownContent: () => void;
+  removeModal: () => void;
+  exitOrder: Function;
   currentOrder: OrderType[];
   setCurrentOrder: React.Dispatch<React.SetStateAction<OrderType[]>>;
   currentPrice: number;
@@ -66,4 +66,12 @@ export interface dashboardMenuContextType {
   setSlideDownContent: React.Dispatch<
     React.SetStateAction<React.ReactNode | null>
   >;
+}
+
+export interface employeeData {
+  _id: string;
+  role: string;
+  username: string;
+  email: string;
+  phoneNumber: string;
 }
