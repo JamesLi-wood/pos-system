@@ -1,19 +1,14 @@
-import { SetStateAction, useEffect, useState, useMemo } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { TicketType } from "../types";
 import Item from "./item";
+import Modal from "../components/modal";
 
-const Takeout = ({
-  activateInventory,
-  setSlidedownContent,
-}: {
-  activateInventory: () => void;
-  setSlidedownContent: React.Dispatch<
-    React.SetStateAction<React.ReactNode | null>
-  >;
-}) => {
+const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
   const [takeoutTickets, setTakeoutTickets] = useState<TicketType[]>([]);
   const socket = useSocket();
+  const [modal, setModal] = useState(false);
+  const [takeoutTicket, setTakeoutTicket] = useState<TicketType | null>();
 
   useEffect(() => {
     if (socket) socket.emit("request-takeout-ticket");
@@ -81,7 +76,7 @@ const Takeout = ({
         <div className="flex justify-center py-4 mb-2">
           <button
             className="cursor-pointer rounded border-none bg-blue-600 p-4 text-white"
-            onClick={activateInventory}
+            onClick={takeOrder}
           >
             Create Order
           </button>
@@ -104,7 +99,8 @@ const Takeout = ({
                     <button
                       className="cursor-pointer rounded border-none bg-blue-600 p-4 text-white"
                       onClick={() => {
-                        setSlidedownContent(<TakeoutDetail detail={data} />);
+                        setModal(true);
+                        setTakeoutTicket(data);
                       }}
                     >
                       Details
@@ -122,6 +118,12 @@ const Takeout = ({
           })}
         </div>
       </div>
+
+      {modal && takeoutTicket && (
+        <Modal removeModal={() => setModal(false)}>
+          <TakeoutDetail detail={takeoutTicket} />
+        </Modal>
+      )}
     </div>
   );
 };
