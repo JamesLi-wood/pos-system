@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { SlArrowDown } from "react-icons/sl";
 import { OrderType } from "../types";
 
@@ -7,15 +7,15 @@ const Item = ({ item }: { item: OrderType }) => {
 
   return (
     <div className="w-full">
-      <div className="flex justify-between mt-2">
-        <div className="flex items-center gap-2">
-          <p>{`${item.quantity}x ${item.name}`}</p>
-          <SlArrowDown
-            onClick={() => setShowExtra((prevState) => !prevState)}
-            className={`cursor-pointer transform transition-transform ${
-              showExtra && "-rotate-180"
-            }`}
-          />
+      <div className="flex flex-wrap justify-between mt-2 items-center">
+        <SlArrowDown
+          onClick={() => setShowExtra((prevState) => !prevState)}
+          className={`mr-2 cursor-pointer transform transition-transform ${
+            showExtra && "-rotate-180"
+          }`}
+        />
+        <div className="flex flex-1 min-w-0">
+          <p className="truncate">{`${item.quantity}x ${item.name}`}</p>
         </div>
         <p>{`$${item.price.toFixed(2)}`}</p>
       </div>
