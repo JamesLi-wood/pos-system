@@ -104,7 +104,7 @@ const Ticket = () => {
     if (response.ok) {
       if (isTakeout) {
         if (socket) socket.emit("request-takeout-ticket");
-        exitOrder();
+        exitOrder("takeoutOrders");
       } else {
         fetchTickets();
         setCurrentOrder([]);
