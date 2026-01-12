@@ -19,3 +19,7 @@ body,
   -ms-overflow-style: none; /* For Internet Explorer and Edge */
   scrollbar-width: none; /* For Firefox */
 }
+
+.truncate {
+  @apply overflow-hidden whitespace-nowrap overflow-ellipsis
+}
