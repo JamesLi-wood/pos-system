@@ -12,7 +12,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       <div className="overflow-y-scroll scroll-hidden z-10">{children}</div>
 
       <button
-        className="-translate-y-1/2 lg:hidden absolute top-1/2 -right-6 rounded-3xl bg-blue-950 p-6"
+        className="-translate-y-1/2 lg:hidden absolute top-1/2 -right-6 rounded-3xl bg-blue-950 p-10"
         onClick={() => setSlide((prevState) => !prevState)}
       ></button>
     </div>
