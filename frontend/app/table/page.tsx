@@ -13,8 +13,8 @@ const Table = () => {
   const [renderContent, setRenderContent] = useState("tables");
   const [mode, setMode] = useState("");
 
-  const exitOrder = () => {
-    setRenderContent("tables");
+  const exitOrder = (renderContent: string) => {
+    setRenderContent(renderContent);
     setMode("");
   };
 
@@ -26,17 +26,17 @@ const Table = () => {
 
   const RenderTables = () => {
     return (
-      <div className="flex justify-between h-full bg-black text-white">
+      <div className="flex justify-between">
         {loading ? (
           <div>LOADING</div>
         ) : (
-          <div className="border mt-4 border-black flex-1 flex flex-col items-center gap-4">
+          <div className="mt-4 flex-1 flex flex-col items-center gap-4">
             {tables.map((table) => {
               return (
                 <div
                   id={table}
                   key={table}
-                  className="h-[100px] w-[90%] rounded-xl border border-[rgb(211, 211, 211)] cursor-pointer justify-center items-center flex"
+                  className="h-[100px] w-full rounded-xl border border-[rgb(211, 211, 211)] cursor-pointer justify-center items-center flex"
                   onClick={() => takeOrder(table)}
                 >
                   {`Table ${table}`}
@@ -54,51 +54,54 @@ const Table = () => {
   };
 
   const Header = () => {
+    const contents = [
+      {
+        title: "Tables",
+        renderContent: "tables",
+      },
+      {
+        title: "Takeout",
+        renderContent: "takeoutOrders",
+      },
+      {
+        title: "Orders",
+        renderContent: "orderHistory",
+      },
+    ];
+
     return (
-      <div className="flex">
-        <div
-          onClick={() => {
-            setRenderContent("tables");
-          }}
-        >
-          Tables
-        </div>
-        <div
-          onClick={() => {
-            setRenderContent("takeoutOrders");
-          }}
-        >
-          Takeout
-        </div>
-        <div
-          onClick={() => {
-            setRenderContent("orderHistory");
-          }}
-        >
-          Orders
-        </div>
-        <div>
-          <Link
-            className="w-[90%] rounded-xl bg-red-500 py-2 text-center"
-            href={"/"}
-          >
-            BACK
-          </Link>
-        </div>
+      <div className="gap-3 flex py-4">
+        {contents.map((content) => {
+          return (
+            <button
+              key={content.title}
+              className="bg-blue-600 hover:bg-blue-800 p-3 rounded-lg"
+              onClick={() => {
+                setRenderContent(content.renderContent);
+              }}
+            >
+              {content.title}
+            </button>
+          );
+        })}
+
+        <button className="bg-red-600 hover:bg-red-800 p-3 rounded-lg">
+          <Link href={"/"}>BACK</Link>
+        </button>
       </div>
     );
   };
   return (
-    <>
+    <div className="bg-black text-white h-full">
       {renderContent ? (
-        <>
+        <div className="h-full px-10">
           <Header />
           {renderContent == "tables" && <RenderTables />}
           {renderContent == "takeoutOrders" && (
             <Takeout takeOrder={() => takeOrder("takeout")} />
           )}
           {renderContent == "orderHistory" && <RenderOrderHistory />}
-        </>
+        </div>
       ) : (
         <>
           {mode == "order" && (
@@ -106,7 +109,7 @@ const Table = () => {
           )}
         </>
       )}
-    </>
+    </div>
   );
 };
 
