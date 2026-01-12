@@ -1,14 +1,15 @@
 import { SetStateAction, useEffect, useState } from "react";
+import useWindowDimensions from "../hooks/useWindowDimension";
 import { useSocket } from "../hooks/useSocket";
-import { TicketType } from "../types";
-import Item from "./item";
 import Modal from "../components/modal";
+import Item from "./item";
+import { TicketType } from "../types";
 
 const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
   const [takeoutTickets, setTakeoutTickets] = useState<TicketType[]>([]);
   const socket = useSocket();
-  const [modal, setModal] = useState(false);
   const [takeoutTicket, setTakeoutTicket] = useState<TicketType | null>();
+  const width = useWindowDimensions();
 
   useEffect(() => {
     if (socket) socket.emit("request-takeout-ticket");
@@ -48,8 +49,8 @@ const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
 
   const TakeoutDetail = ({ detail }: { detail: TicketType }) => {
     return (
-      <div className="bg-inherit px-4">
-        <div className="sticky top-0 z-10 bg-inherit text-3xl">
+      <div className="h-full px-4">
+        <div className="bg-inherit text-3xl">
           <p className="py-4">{`Order# ${detail.orderID}`}</p>
           <hr />
         </div>
@@ -65,65 +66,69 @@ const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
             return <Item key={idx} item={ticket} />;
           })}
         </div>
+
+        <button
+          className="cursor-pointer rounded border-none bg-red-500 p-4 text-white"
+          onClick={() => {
+            removeOrder(detail.orderID);
+            setTakeoutTicket(null);
+          }}
+        >
+          Remove
+        </button>
       </div>
     );
   };
 
   return (
-    <div>
-      <p className="text-center text-2xl">Takeout</p>
-      <div>
-        <div className="flex justify-center py-4 mb-2">
-          <button
-            className="cursor-pointer rounded border-none bg-blue-600 p-4 text-white"
-            onClick={takeOrder}
-          >
-            Create Order
-          </button>
-        </div>
+    <div className="h-[80%]">
+      <div className="flex items-center gap-5 mb-5">
+        <p className="text-center text-2xl">Takeout</p>
+        <button
+          className="cursor-pointer rounded border-none bg-blue-600 p-4 text-white"
+          onClick={takeOrder}
+        >
+          Create Order
+        </button>
+      </div>
 
-        <div className="flex items-center flex-col">
+      <div className="flex h-[85%] justify-between gap-8">
+        <div className="w-full flex flex-col items-center gap-4 overflow-y-scroll scroll-hidden">
           {takeoutTickets.map((data: TicketType) => {
             return (
               <div
                 key={data.orderID}
-                className="py-4 bg-white text-black mb-2 w-[90%] rounded-2xl"
+                className="p-4 cursor-pointer bg-white text-black w-full rounded-2xl"
+                onClick={() => setTakeoutTicket(data)}
               >
-                <div className="flex flex-col items-start justify-between px-4">
-                  <div>
-                    <p>{`Order #${data.orderID}`}</p>
-                    <p>{data.name}</p>
-                    <p>{data.phoneNumber}</p>
-                  </div>
-                  <div className="flex mt-2 w-full gap-1 justify-center">
-                    <button
-                      className="cursor-pointer rounded border-none bg-blue-600 p-4 text-white"
-                      onClick={() => {
-                        setModal(true);
-                        setTakeoutTicket(data);
-                      }}
-                    >
-                      Details
-                    </button>
-                    <button
-                      className="cursor-pointer rounded border-none bg-red-500 p-4 text-white"
-                      onClick={() => removeOrder(data.orderID)}
-                    >
-                      Remove
-                    </button>
-                  </div>
+                <div className="flex gap-5">
+                  <p>{`Order #${data.orderID}`}</p>
+                  <p>{data.phoneNumber}</p>
                 </div>
+                <p>{data.name}</p>
               </div>
             );
           })}
         </div>
-      </div>
 
-      {modal && takeoutTicket && (
-        <Modal removeModal={() => setModal(false)}>
-          <TakeoutDetail detail={takeoutTicket} />
-        </Modal>
-      )}
+        {takeoutTicket &&
+          (width <= 750 ? (
+            <Modal
+              height={80}
+              width={80}
+              altWidthDimensions={750}
+              altHeight={80}
+              altWidth={80}
+              removeModal={() => setTakeoutTicket(null)}
+            >
+              <TakeoutDetail detail={takeoutTicket} />
+            </Modal>
+          ) : (
+            <div className="w-2/5 bg-white text-black overflow-y-scroll">
+              <TakeoutDetail detail={takeoutTicket} />
+            </div>
+          ))}
+      </div>
     </div>
   );
 };
