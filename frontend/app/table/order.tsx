@@ -22,7 +22,7 @@ const Order = ({
   const [options, setOptions] = useState<MenuType>(menu[0]);
   const [selectedItem, setSelectedItem] = useState(0);
   const [currentOrder, setCurrentOrder] = useState<OrderType[]>([]);
-  const [currentPrice, setCurrentPrice] = useState(0)
+  const [currentPrice, setCurrentPrice] = useState(0);
   const [modalContent, setModalContent] = useState("");
   const [menuItem, setMenuItem] = useState<MenuItemType | undefined>(undefined);
 
@@ -45,7 +45,14 @@ const Order = ({
     return (
       <div className="w-40 px-4 gap-3 flex flex-col">
         <div className="text-4xl text-center mt-14 mb-6">{tableName}</div>
-        <button className="bg-red-500 p-2" onClick={() => exitOrder()}>
+        <button
+          className="bg-red-500 p-2"
+          onClick={() => {
+            tableName == "takeout"
+              ? exitOrder("takeoutOrders")
+              : exitOrder("tables");
+          }}
+        >
           Return
         </button>
         <button
@@ -106,11 +113,11 @@ const Order = ({
 
   return (
     <tableContext.Provider value={contextValue}>
-      <div className="flex flex-col justify-between bg-black text-white h-full">
+      <div className="flex flex-col justify-between h-full">
         <div className="flex flex-row h-full items-center">
           <Sidebar>{handleMenuLoad}</Sidebar>
 
-          <div className="overflow-y-scroll w-full h-[90%]">
+          <div className="overflow-y-scroll w-full px-4 h-[90%]">
             <p className="text-4xl mb-8 text-center">{options.name}</p>
             <div className="flex flex-wrap gap-5 justify-center mx-4 pb-4">
               {handleOptionsLoad}
@@ -119,7 +126,14 @@ const Order = ({
         </div>
 
         {modalContent && (
-          <Modal removeModal={removeModal}>
+          <Modal
+            height={80}
+            width={40}
+            altWidthDimensions={750}
+            altHeight={90}
+            altWidth={90}
+            removeModal={removeModal}
+          >
             {modalContent == "ticket" && <Ticket />}
             {menuItem && modalContent == "menuItem" && (
               <MenuItem item={menuItem} />
