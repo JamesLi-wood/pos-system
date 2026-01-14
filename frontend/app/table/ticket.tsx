@@ -2,7 +2,6 @@ import { useState, useContext, useEffect, useRef } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { tableContext } from "./order";
 import Item from "./item";
-import { VscChromeClose } from "react-icons/vsc";
 import { TicketType } from "../types";
 
 const Ticket = () => {
@@ -21,7 +20,11 @@ const Ticket = () => {
   } = context;
   const [tickets, setTickets] = useState<TicketType[]>([]);
   const [price, setPrice] = useState(0);
-  const [showDelete, setShowDelete] = useState(false);
+  const [selectedItem, setSelectedItem] = useState({
+    mode: "",
+    ticketIdx: -1,
+    itemIdx: -1,
+  });
   const nameRef = useRef<HTMLInputElement | null>(null);
   const phoneRef = useRef<HTMLInputElement | null>(null);
   const socket = useSocket();
@@ -48,6 +51,20 @@ const Ticket = () => {
   }, []);
 
   const removeItem = async (orderIdx: number, itemIdx: number) => {
+    if (selectedItem.mode == "currentTicket") {
+      const idx = selectedItem.itemIdx;
+      setCurrentPrice((prevState) => prevState - currentOrder[idx].price);
+      setCurrentOrder((prevState) =>
+        prevState.filter((data, pos) => idx !== pos)
+      );
+      setSelectedItem({
+        mode: "",
+        ticketIdx: -1,
+        itemIdx: -1,
+      });
+      return;
+    }
+
     await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/remove-item/${tableName}`,
       {
@@ -62,14 +79,12 @@ const Ticket = () => {
       }
     );
 
+    setSelectedItem({
+      mode: "",
+      ticketIdx: -1,
+      itemIdx: -1,
+    });
     if (tableName !== "takeout") fetchTickets();
-  };
-
-  const removeCurrentItem = (idx: number) => {
-    setCurrentPrice((prevState) => prevState - currentOrder[idx].price);
-    setCurrentOrder((prevState) =>
-      prevState.filter((data, pos) => idx !== pos)
-    );
   };
 
   const sendKitchen = async () => {
@@ -170,16 +185,23 @@ const Ticket = () => {
             return (
               <div key={orders.orderID}>
                 {orders.ticket.map((item: any, itemIdx: number) => {
+                  const selected =
+                    selectedItem.ticketIdx == ticketIdx &&
+                    selectedItem.itemIdx == itemIdx;
                   return (
-                    <div key={itemIdx} className="flex">
-                      {showDelete && (
-                        <button
-                          className="w-7 flex items-center justify-center p-1 cursor-pointer border-none bg-[rgb(255,0,0)] text-white"
-                          onClick={() => removeItem(ticketIdx, itemIdx)}
-                        >
-                          <VscChromeClose />
-                        </button>
-                      )}
+                    <div
+                      key={itemIdx}
+                      className={`${
+                        selected && "bg-red-500"
+                      } cursor-pointer flex`}
+                      onClick={() => {
+                        setSelectedItem({
+                          mode: "previousTicket",
+                          ticketIdx: ticketIdx,
+                          itemIdx: itemIdx,
+                        });
+                      }}
+                    >
                       <Item item={item} />
                     </div>
                   );
@@ -194,16 +216,22 @@ const Ticket = () => {
               {tickets.length !== 0 && <hr />}
               <p className="text-center">Current order</p>
               {currentOrder.map((order, idx) => {
+                const selected =
+                  selectedItem.ticketIdx == -1 && selectedItem.itemIdx == idx;
                 return (
-                  <div key={idx} className="flex">
-                    {showDelete && (
-                      <button
-                        className="w-7 flex items-center justify-center p-1 cursor-pointer border-none bg-[rgb(255,0,0)] text-white"
-                        onClick={() => removeCurrentItem(idx)}
-                      >
-                        <VscChromeClose />
-                      </button>
-                    )}
+                  <div
+                    key={idx}
+                    className={`${
+                      selected && "bg-red-500"
+                    } cursor-pointer flex`}
+                    onClick={() => {
+                      setSelectedItem({
+                        mode: "currentTicket",
+                        ticketIdx: -1,
+                        itemIdx: idx,
+                      });
+                    }}
+                  >
                     <Item item={order} />
                   </div>
                 );
@@ -220,14 +248,8 @@ const Ticket = () => {
           <p>{`$${(price + currentPrice).toFixed(2)}`}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button className="bg-green-500 p-2" onClick={sendKitchen}>
+          <button className="bg-blue-500 p-2" onClick={sendKitchen}>
             Send to kitchen
-          </button>
-          <button
-            className="bg-red-500 p-2"
-            onClick={() => setShowDelete((prevState) => !prevState)}
-          >
-            Remove Item
           </button>
           {tableName !== "takeout" && (
             <>
@@ -235,6 +257,16 @@ const Ticket = () => {
                 Pay
               </button>
             </>
+          )}
+          {selectedItem.mode && (
+            <button
+              className="bg-red-500 p-2"
+              onClick={() =>
+                removeItem(selectedItem.ticketIdx, selectedItem.itemIdx)
+              }
+            >
+              Remove Item
+            </button>
           )}
         </div>
       </div>
