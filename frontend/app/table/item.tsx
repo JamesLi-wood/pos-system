@@ -7,14 +7,14 @@ const Item = ({ item }: { item: OrderType }) => {
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap justify-between mt-2 items-center">
+      <div className="flex flex-wrap justify-between py-1 items-center">
         <SlArrowDown
           onClick={() => setShowExtra((prevState) => !prevState)}
           className={`mr-2 cursor-pointer transform transition-transform ${
             showExtra && "-rotate-180"
           }`}
         />
-        <div className="flex flex-1 min-w-0">
+        <div className="flex-1 min-w-0">
           <p className="truncate">{`${item.quantity}x ${item.name}`}</p>
         </div>
         <p>{`$${item.price.toFixed(2)}`}</p>
