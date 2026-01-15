@@ -1,5 +1,6 @@
 "use client";
 import { VscChromeClose } from "react-icons/vsc";
+import useWindowDimensions from "../hooks/useWindowDimension";
 
 const Modal = ({
   children,
@@ -18,17 +19,15 @@ const Modal = ({
   altWidth: number;
   removeModal: () => void;
 }) => {
+  const windowWidth = useWindowDimensions();
+
   return (
     <div className="z-[999] absolute top-0 right-0 left-0 bottom-0">
       <div
         id="slidedown-component"
         style={{
-          height: `${
-            window.innerWidth <= altWidthDimensions ? altHeight : height
-          }%`,
-          width: `${
-            window.innerWidth <= altWidthDimensions ? altWidth : width
-          }%`,
+          height: `${windowWidth <= altWidthDimensions ? altHeight : height}%`,
+          width: `${windowWidth <= altWidthDimensions ? altWidth : width}%`,
         }}
         className={`text-white scroll-hidden pointer-events-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-y-scroll rounded-2xl bg-neutral-950`}
       >
