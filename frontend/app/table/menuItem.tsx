@@ -44,7 +44,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
       return;
     }
 
-    const totalPrice = item.price * counter + additionalPrice;
+    const totalPrice = (item.price + additionalPrice) * counter;
     const order = {
       name: item.name,
       price: totalPrice,
@@ -243,7 +243,7 @@ const MenuItem = ({ item }: { item: MenuItemType }) => {
           onClick={addOrder}
         >
           <p>Add {counter === 1 ? "Item" : `${counter} Items`}</p>
-          <p>{`$${(item.price * counter + additionalPrice).toFixed(2)}`}</p>
+          <p>{`$${((item.price + additionalPrice) * counter).toFixed(2)}`}</p>
         </button>
       </div>
     </div>
