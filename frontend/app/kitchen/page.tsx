@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useValidateToken from "../hooks/useValidateToken";
 import { useSocket } from "../hooks/useSocket";
 import KitchenTicket from "./kitchenTicket";
@@ -20,7 +20,7 @@ const Kitchen = () => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleSocketRequest = (data: SetStateAction<TicketType[]>) => {
+    const handleSocketRequest = (data: TicketType[]) => {
       setKitchenTickets(data);
     };
 
