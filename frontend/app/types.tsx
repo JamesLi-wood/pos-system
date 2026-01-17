@@ -50,12 +50,24 @@ export interface TableContextType {
   setCurrentPrice: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export interface TicketType {
+export interface KitchenTicketType {
   dateCreated: number;
   orderID: number;
   ticket: OrderType[];
-  name: string | null;
-  phoneNumber: string | null;
+}
+
+export interface TakeoutTicketType {
+  dateCreated: number;
+  orderID: number;
+  ticket: OrderType[];
+  name: string;
+  phoneNumber: string;
+}
+
+export interface CompletedOrdersType {
+  dateCreated: number;
+  ticket: OrderType[];
+  totalPrice: number;
 }
 
 export interface dashboardMenuContextType {
