@@ -1,14 +1,14 @@
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useWindowDimensions from "../hooks/useWindowDimension";
 import { useSocket } from "../hooks/useSocket";
 import Modal from "../components/modal";
 import Item from "./item";
-import { TicketType } from "../types";
+import { TakeoutTicketType } from "../types";
 
 const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
-  const [takeoutTickets, setTakeoutTickets] = useState<TicketType[]>([]);
   const socket = useSocket();
-  const [takeoutTicket, setTakeoutTicket] = useState<TicketType | null>();
+  const [takeoutTickets, setTakeoutTickets] = useState<TakeoutTicketType[]>([]);
+  const [ticket, setTicket] = useState<TakeoutTicketType | null>(null);
   const width = useWindowDimensions();
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleSocketRequest = (data: SetStateAction<TicketType[]>) => {
+    const handleSocketRequest = (data: TakeoutTicketType[]) => {
       setTakeoutTickets(data);
     };
 
@@ -47,7 +47,7 @@ const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
     }
   };
 
-  const TakeoutDetail = ({ detail }: { detail: TicketType }) => {
+  const TakeoutDetail = ({ detail }: { detail: TakeoutTicketType }) => {
     return (
       <div className="h-full px-4">
         <div className="bg-inherit text-3xl">
@@ -71,7 +71,7 @@ const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
           className="cursor-pointer rounded border-none bg-red-500 p-4 text-white"
           onClick={() => {
             removeOrder(detail.orderID);
-            setTakeoutTicket(null);
+            setTicket(null);
           }}
         >
           Remove
@@ -94,12 +94,12 @@ const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
 
       <div className="flex h-[85%] justify-between gap-8">
         <div className="w-full flex flex-col items-center gap-4 overflow-y-scroll scroll-hidden">
-          {takeoutTickets.map((data: TicketType) => {
+          {takeoutTickets.map((data: TakeoutTicketType) => {
             return (
               <div
                 key={data.orderID}
                 className="p-4 cursor-pointer bg-white text-black w-full rounded-2xl"
-                onClick={() => setTakeoutTicket(data)}
+                onClick={() => setTicket(data)}
               >
                 <div className="flex gap-5">
                   <p>{`Order #${data.orderID}`}</p>
@@ -111,7 +111,7 @@ const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
           })}
         </div>
 
-        {takeoutTicket &&
+        {ticket &&
           (width <= 750 ? (
             <Modal
               height={80}
@@ -119,13 +119,13 @@ const Takeout = ({ takeOrder }: { takeOrder: () => void }) => {
               altWidthDimensions={750}
               altHeight={80}
               altWidth={80}
-              removeModal={() => setTakeoutTicket(null)}
+              removeModal={() => setTicket(null)}
             >
-              <TakeoutDetail detail={takeoutTicket} />
+              <TakeoutDetail detail={ticket} />
             </Modal>
           ) : (
             <div className="w-2/5 bg-white text-black overflow-y-scroll">
-              <TakeoutDetail detail={takeoutTicket} />
+              <TakeoutDetail detail={ticket} />
             </div>
           ))}
       </div>
