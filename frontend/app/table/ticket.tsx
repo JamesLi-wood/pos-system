@@ -2,7 +2,7 @@ import { useState, useContext, useEffect, useRef } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { tableContext } from "./order";
 import Item from "./item";
-import { TicketType } from "../types";
+import { OrderType } from "../types";
 
 const Ticket = () => {
   const context = useContext(tableContext);
@@ -18,11 +18,10 @@ const Ticket = () => {
     setCurrentPrice,
     exitOrder,
   } = context;
-  const [tickets, setTickets] = useState<TicketType[]>([]);
+  const [tickets, setTickets] = useState<OrderType[]>([]);
   const [price, setPrice] = useState(0);
   const [selectedItem, setSelectedItem] = useState({
     mode: "",
-    ticketIdx: -1,
     itemIdx: -1,
   });
   const nameRef = useRef<HTMLInputElement | null>(null);
@@ -50,7 +49,7 @@ const Ticket = () => {
     if (tableName !== "takeout") fetchTickets();
   }, []);
 
-  const removeItem = async (orderIdx: number, itemIdx: number) => {
+  const removeItem = async (itemIdx: number) => {
     if (selectedItem.mode == "currentTicket") {
       const idx = selectedItem.itemIdx;
       setCurrentPrice((prevState) => prevState - currentOrder[idx].price);
@@ -59,7 +58,6 @@ const Ticket = () => {
       );
       setSelectedItem({
         mode: "",
-        ticketIdx: -1,
         itemIdx: -1,
       });
       return;
@@ -73,7 +71,6 @@ const Ticket = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          orderIdx: orderIdx,
           itemIdx: itemIdx,
         }),
       }
@@ -81,7 +78,6 @@ const Ticket = () => {
 
     setSelectedItem({
       mode: "",
-      ticketIdx: -1,
       itemIdx: -1,
     });
     if (tableName !== "takeout") fetchTickets();
@@ -131,8 +127,8 @@ const Ticket = () => {
   };
 
   const handlePay = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/clear-ticket/${tableName}`,
+     const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/order/ticket/pay-order/${tableName}`,
       {
         method: "POST",
         headers: {
@@ -142,6 +138,7 @@ const Ticket = () => {
     );
 
     if (response.ok) {
+      if (socket) socket.emit("request-completed-orders");
       fetchTickets();
       setCurrentOrder([]);
       setCurrentPrice(0);
@@ -178,56 +175,43 @@ const Ticket = () => {
           <hr className="mb-2" />
         </div>
         <div className="flex flex-col px-4">
-          {tickets.length !== 0 && (
-            <p className="text-center">Previous orders</p>
-          )}
-          {tickets.map((orders, ticketIdx) => {
+          {tickets.map((ticket, idx) => {
+            const selected =
+              selectedItem.mode == "previousTicket" &&
+              selectedItem.itemIdx == idx;
+
             return (
-              <div key={orders.orderID}>
-                {orders.ticket.map((item: any, itemIdx: number) => {
-                  const selected =
-                    selectedItem.ticketIdx == ticketIdx &&
-                    selectedItem.itemIdx == itemIdx;
-                  return (
-                    <div
-                      key={itemIdx}
-                      className={`${
-                        selected && "bg-red-500"
-                      } cursor-pointer flex`}
-                      onClick={() => {
-                        setSelectedItem({
-                          mode: "previousTicket",
-                          ticketIdx: ticketIdx,
-                          itemIdx: itemIdx,
-                        });
-                      }}
-                    >
-                      <Item item={item} />
-                    </div>
-                  );
-                })}
-                {ticketIdx !== tickets.length - 1 && <hr className="my-2" />}
+              <div
+                key={idx}
+                className={`${selected && "bg-red-500"} cursor-pointer`}
+                onClick={() =>
+                  setSelectedItem({
+                    mode: "previousTicket",
+                    itemIdx: idx,
+                  })
+                }
+              >
+                <Item item={ticket} />
               </div>
             );
           })}
 
           {currentOrder.length !== 0 && (
             <>
-              {tickets.length !== 0 && <hr />}
+              {tickets.length !== 0 && <hr className="my-2" />}
               <p className="text-center">Current order</p>
               {currentOrder.map((order, idx) => {
                 const selected =
-                  selectedItem.ticketIdx == -1 && selectedItem.itemIdx == idx;
+                  selectedItem.mode == "currentTicket" &&
+                  selectedItem.itemIdx == idx;
+
                 return (
                   <div
                     key={idx}
-                    className={`${
-                      selected && "bg-red-500"
-                    } cursor-pointer flex`}
+                    className={`${selected && "bg-red-500"} cursor-pointer`}
                     onClick={() => {
                       setSelectedItem({
                         mode: "currentTicket",
-                        ticketIdx: -1,
                         itemIdx: idx,
                       });
                     }}
@@ -261,9 +245,7 @@ const Ticket = () => {
           {selectedItem.mode && (
             <button
               className="bg-red-500 p-2"
-              onClick={() =>
-                removeItem(selectedItem.ticketIdx, selectedItem.itemIdx)
-              }
+              onClick={() => removeItem(selectedItem.itemIdx)}
             >
               Remove Item
             </button>
