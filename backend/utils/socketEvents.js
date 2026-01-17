@@ -20,6 +20,16 @@ exports.handleTakeoutRequests = (socket) => {
   });
 };
 
+exports.handleCompletedOrdersRequests = (socket) => {
+  socket.on("request-completed-orders", () => {
+    socket.emit("get-completed-orders", ticketManager.getCompletedOrders());
+    socket.broadcast.emit(
+      "get-completed-orders",
+      ticketManager.getCompletedOrders()
+    );
+  });
+};
+
 exports.handleRemoveKitchenTicket = (socket) => {
   socket.on("remove-kitchen-ticket", (id) => {
     ticketManager.removeKitchenTicket(id);
