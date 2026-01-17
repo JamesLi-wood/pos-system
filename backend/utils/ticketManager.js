@@ -3,6 +3,7 @@ class TicketManager {
     this.tables = new Map();
     this.kitchenTicket = [];
     this.takeoutTicket = [];
+    this.completedOrders = [];
     this.orderID = 1;
   }
 
@@ -11,77 +12,59 @@ class TicketManager {
       arr.map((data) => [
         data,
         {
-          orderHistory: [],
+          status: "empty",
+          dateCreated: null,
+          ticket: [],
           totalPrice: 0,
         },
       ])
     );
   }
 
-  getTicket(table) {
-    const tableData = this.tables.get(table);
-    return tableData.orderHistory;
+  getTicket(tableName) {
+    const table = this.tables.get(tableName);
+    return table.ticket;
   }
 
-  addTicket(table, ticket, totalPrice) {
-    const tableData = this.tables.get(table);
-    const dateCreated = new Date().getTime();
-    const updatedTicket = {
-      dateCreated: dateCreated,
-      orderID: this.orderID,
-      ticket: ticket,
-    };
-    this.orderID++;
-
-    tableData.orderHistory.push(updatedTicket);
-    this.kitchenTicket.push(updatedTicket);
-    tableData.totalPrice += totalPrice;
-  }
-
-  clearTicket(table) {
-    const tableData = this.tables.get(table);
-    tableData.orderHistory = [];
-    tableData.totalPrice = 0;
-  }
-
-  removeItem(table, orderIdx, itemIdx) {
-    const tableData = this.tables.get(table);
-    const order = tableData.orderHistory[orderIdx];
-
-    const priceReduction = order.ticket[itemIdx].price;
-    tableData.totalPrice -= priceReduction;
-
-    const filteredTicket = order.ticket.filter((ticket, pos) => pos != itemIdx);
-    if (filteredTicket.length == 0) {
-      // Removes the empty ticket order from the order history
-      const filteredOrder = tableData.orderHistory.filter(
-        (orders, idx) => idx != orderIdx
-      );
-      tableData.orderHistory = filteredOrder;
-    } else {
-      order.ticket = filteredTicket;
-    }
-  }
-
-  getPrice(table) {
-    const tableData = this.tables.get(table);
-    return tableData.totalPrice;
+  getPrice(tableName) {
+    const table = this.tables.get(tableName);
+    return table.totalPrice;
   }
 
   getKitchenTicket() {
     return this.kitchenTicket;
   }
 
-  removeKitchenTicket(id) {
-    this.kitchenTicket = this.kitchenTicket.filter(
-      (data) => data.orderID != id
-    );
+  getTakeoutTicket() {
+    return this.takeoutTicket;
+  }
+
+  getCompletedOrders() {
+    return this.completedOrders;
+  }
+
+  addTicket(tableName, ticket, totalPrice) {
+    const table = this.tables.get(tableName);
+
+    if (table.status == "empty") {
+      table.status = "occupied";
+      table.dateCreated = new Date().getTime();
+    }
+
+    table.ticket.push(...ticket);
+    table.totalPrice += totalPrice;
+
+    this.kitchenTicket.push({
+      dateCreated: new Date().getTime(),
+      orderID: this.orderID,
+      ticket: ticket,
+    });
+    this.orderID++;
   }
 
   addTakeoutTicket(ticket, name, phoneNumber) {
-    const dateCreated = new Date().getTime();
     const updatedTicket = {
-      dateCreated: dateCreated,
+      dateCreated: new Date().getTime(),
       orderID: this.orderID,
       ticket: ticket,
       name: name,
@@ -93,8 +76,33 @@ class TicketManager {
     this.takeoutTicket.push(updatedTicket);
   }
 
-  getTakeoutTicket() {
-    return this.takeoutTicket;
+  handlePayment(tableName) {
+    const table = this.tables.get(tableName);
+    this.completedOrders.push({
+      dateCreated: table.dateCreated,
+      ticket: table.ticket,
+      totalPrice: table.totalPrice,
+    });
+    table.status = "empty";
+    table.dateCreated = null;
+    table.ticket = [];
+    table.totalPrice = 0;
+  }
+
+  removeItem(tableName, itemIdx) {
+    const table = this.tables.get(tableName);
+
+    const priceReduction = table.ticket[itemIdx].price;
+    table.totalPrice -= priceReduction;
+
+    const filteredTicket = table.ticket.filter((ticket, idx) => idx != itemIdx);
+    table.ticket = filteredTicket;
+  }
+
+  removeKitchenTicket(id) {
+    this.kitchenTicket = this.kitchenTicket.filter(
+      (data) => data.orderID != id
+    );
   }
 
   removeTakeoutTicket(id) {
