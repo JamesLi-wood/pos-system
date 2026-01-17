@@ -1,12 +1,12 @@
 "use client";
 import useTimer from "../hooks/useTimer";
-import { TicketType } from "../types";
+import { KitchenTicketType } from "../types";
 
 const KitchenTicket = ({
   data,
   removeTicket,
 }: {
-  data: TicketType;
+  data: KitchenTicketType;
   removeTicket: () => void;
 }) => {
   const [formatTime] = useTimer(data.dateCreated);
