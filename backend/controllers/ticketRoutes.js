@@ -33,10 +33,10 @@ module.exports = (ticketManager) => {
     }
   });
 
-  router.post("/clear-ticket/:tableName", (req, res) => {
+  router.post("/pay-order/:tableName", (req, res) => {
     const { tableName } = req.params;
     try {
-      ticketManager.clearTicket(tableName);
+      ticketManager.handlePayment(tableName);
       res.sendStatus(204);
     } catch (error) {
       res.status(500).send({ error: "Error processing empty ticket request" });
@@ -45,9 +45,9 @@ module.exports = (ticketManager) => {
 
   router.post("/remove-item/:tableName", (req, res) => {
     const { tableName } = req.params;
-    const { orderIdx, itemIdx } = req.body;
+    const { itemIdx } = req.body;
     try {
-      ticketManager.removeItem(tableName, orderIdx, itemIdx);
+      ticketManager.removeItem(tableName, itemIdx);
       res.sendStatus(204);
     } catch (error) {
       res.status(500).send({ error: "Error processing remove item request" });
