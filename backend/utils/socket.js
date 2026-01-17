@@ -4,6 +4,7 @@ const {
   handleTakeoutRequests,
   handleRemoveKitchenTicket,
   handleRemoveTakeoutTicket,
+  handleCompletedOrdersRequests,
 } = require("./socketEvents");
 
 const socketIoSetup = async (server) => {
@@ -19,8 +20,13 @@ const socketIoSetup = async (server) => {
 
     handleKitchenRequests(socket);
     handleTakeoutRequests(socket);
+    handleCompletedOrdersRequests(socket);
     handleRemoveKitchenTicket(socket);
     handleRemoveTakeoutTicket(socket);
+
+    socket.on("disconnect", (reason) => {
+      console.log(`User disconnected: ${socket.id}, Reason: ${reason}`);
+    });
   });
 };
 
